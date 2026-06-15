@@ -8,7 +8,6 @@
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;background:#f5f7fb;color:#1a1a1a;padding-bottom:70px;}
         
-        /* Bottom Navigation */
         .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:12px 20px;box-shadow:0 -2px 10px rgba(0,0,0,0.05);z-index:100;}
         .nav-item{text-align:center;cursor:pointer;color:#999;transition:0.2s;}
         .nav-item.active{color:#1a73e8;}
@@ -22,55 +21,53 @@
         
         .container{padding:20px;max-width:600px;margin:0 auto;}
         
-        /* Scan Section */
         .scan-section{background:white;border-radius:20px;padding:25px;text-align:center;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
         .scan-section h2{font-size:20px;margin-bottom:8px;}
         .scan-section p{font-size:13px;color:#666;margin-bottom:20px;}
-        .scan-buttons{display:flex;gap:15px;justify-content:center;}
+        .scan-buttons{display:flex;gap:15px;justify-content:center;flex-wrap:wrap;}
         .scan-btn{background:#1a73e8;color:white;border:none;padding:12px 25px;border-radius:30px;cursor:pointer;font-weight:bold;display:flex;align-items:center;gap:8px;font-size:14px;}
         .scan-btn.outline{background:#f0f7ff;color:#1a73e8;border:1px solid #1a73e8;}
+        .camera-switch{background:#666;color:white;border:none;padding:8px 15px;border-radius:30px;cursor:pointer;font-size:12px;margin-top:10px;}
         
-        /* Comparing Platforms */
-        .comparing-bar{background:white;border-radius:12px;padding:12px;margin-bottom:20px;display:flex;justify-content:space-around;box-shadow:0 2px 8px rgba(0,0,0,0.05);flex-wrap:wrap;}
+        .comparing-bar{background:white;border-radius:12px;padding:12px;margin-bottom:20px;display:flex;justify-content:space-around;flex-wrap:wrap;gap:8px;}
         .platform-icon{text-align:center;}
         .platform-icon i{font-size:20px;margin-bottom:4px;display:block;}
         .platform-icon span{font-size:9px;font-weight:bold;}
         
-        /* Recent Scans */
         .recent-scans{background:white;border-radius:16px;padding:15px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
         .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
         .section-title h3{font-size:16px;}
-        .section-title a{font-size:12px;color:#1a73e8;text-decoration:none;}
+        .section-title a{font-size:12px;color:#1a73e8;text-decoration:none;cursor:pointer;}
         .scan-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;}
         .scan-item:last-child{border-bottom:none;}
         .scan-item .name{font-weight:500;font-size:14px;}
         .scan-item .price{font-weight:bold;color:#e74c3c;}
         
-        /* Results Box Style */
         .results-section{margin-top:20px;}
         .comparison-card{background:white;border-radius:16px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border-left:4px solid #1a73e8;}
         .comparison-title{font-weight:bold;font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
         .comparison-title img{width:40px;height:40px;object-fit:contain;border-radius:8px;}
-        .store-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;}
+        .store-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;flex-wrap:wrap;gap:8px;}
         .store-row:last-child{border-bottom:none;}
-        .store-name{display:flex;align-items:center;gap:8px;font-weight:500;}
+        .store-name{display:flex;align-items:center;gap:8px;font-weight:500;min-width:100px;}
         .store-price{font-weight:bold;font-size:16px;}
         .cheapest-badge{background:#4caf50;color:white;font-size:9px;padding:2px 8px;border-radius:20px;margin-left:8px;}
         .buy-btn{background:#ff9800;color:white;border:none;padding:6px 15px;border-radius:25px;cursor:pointer;font-size:11px;font-weight:bold;text-decoration:none;display:inline-block;}
         .buy-btn:hover{background:#fb641b;}
         
-        /* Loading */
         .loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;justify-content:center;align-items:center;z-index:200;flex-direction:column;}
         .loading-spinner{width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid #1a73e8;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:15px;}
         @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
         .loading-text{color:white;font-size:16px;}
-        .loading-steps{display:flex;gap:20px;margin-top:20px;color:#ccc;font-size:12px;}
+        .loading-steps{display:flex;gap:20px;margin-top:20px;color:#ccc;font-size:12px;flex-wrap:wrap;justify-content:center;}
         .loading-steps span.active{color:#1a73e8;font-weight:bold;}
         
         footer{text-align:center;padding:20px;color:#999;font-size:11px;}
         
-        /* Hide extra elements */
-        .extra-content{display:none;}
+        @media (max-width:600px){
+            .store-row{flex-direction:column;align-items:flex-start;}
+            .buy-btn{margin-left:auto;}
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -85,11 +82,12 @@
     <!-- Scan Section -->
     <div class="scan-section">
         <h2>Find the Lowest Price</h2>
-        <p>Upload or take photo of product to compare across top Indian e-commerce stores</p>
+        <p>Take photo or upload product image to compare across top Indian e-commerce stores</p>
         <div class="scan-buttons">
             <button class="scan-btn" id="cameraBtn"><i class="fas fa-camera"></i> TAKE PHOTO</button>
             <button class="scan-btn outline" id="uploadBtn"><i class="fas fa-upload"></i> UPLOAD</button>
         </div>
+        <button class="camera-switch" id="switchCameraBtn" style="display:none;"><i class="fas fa-sync-alt"></i> Switch Camera</button>
     </div>
 
     <!-- Comparing Platforms -->
@@ -102,7 +100,7 @@
     </div>
 
     <!-- Recent Scans -->
-    <div class="section-title"><h3>Recent Scans</h3><a href="#" id="clearHistoryBtn">Clear All</a></div>
+    <div class="section-title"><h3>Recent Scans</h3><a id="clearHistoryBtn">Clear All</a></div>
     <div class="recent-scans" id="recentScans">
         <div class="scan-item"><span class="name">iPhone 15 Pro</span><span class="price">₹1,14,900</span></div>
         <div class="scan-item"><span class="name">Sony WH-1000XM5</span><span class="price">₹19,990</span></div>
@@ -121,14 +119,14 @@
         <span id="step1" class="active">📤 Uploading</span>
         <span id="step2">🔍 Detecting</span>
         <span id="step3">💰 Comparing</span>
+        <span id="step4">📊 5 Platforms</span>
     </div>
 </div>
 
-<!-- Hidden File Input -->
 <input type="file" id="fileInput" accept="image/*" style="display:none">
 
 <footer>
-    <p>© 2026 Price Comparisons | Compare & Save</p>
+    <p>© 2026 Price Comparisons | Compare & Save on Amazon, Flipkart, Myntra, Ajio, Meesho</p>
 </footer>
 
 <div class="bottom-nav">
@@ -139,119 +137,155 @@
 </div>
 
 <script>
-    // API Keys
-    const CHANNEL3_API_KEY = "EUx3GsuU8P5u4sEFgBw2U10X2gX45kaZ1MoHgORk";
-    
-    // Platforms configuration
+    // Platform configurations
     const platforms = [
-        { id: "amazon", name: "Amazon India", icon: "fab fa-amazon", color: "#ff9900", url: "https://amazon.in" },
-        { id: "flipkart", name: "Flipkart", icon: "fas fa-store", color: "#2874f0", url: "https://flipkart.com" },
-        { id: "myntra", name: "Myntra", icon: "fas fa-shopping-bag", color: "#e91e63", url: "https://myntra.com" },
-        { id: "ajio", name: "Ajio", icon: "fas fa-tshirt", color: "#ff6b35", url: "https://ajio.com" },
-        { id: "meesho", name: "Meesho", icon: "fas fa-gift", color: "#9c27b0", url: "https://meesho.com" }
+        { id: "amazon", name: "Amazon India", icon: "fab fa-amazon", color: "#ff9900", url: "https://amazon.in", logo: "🟡" },
+        { id: "flipkart", name: "Flipkart", icon: "fas fa-store", color: "#2874f0", url: "https://flipkart.com", logo: "🔵" },
+        { id: "myntra", name: "Myntra", icon: "fas fa-shopping-bag", color: "#e91e63", url: "https://myntra.com", logo: "🩷" },
+        { id: "ajio", name: "Ajio", icon: "fas fa-tshirt", color: "#ff6b35", url: "https://ajio.com", logo: "🟠" },
+        { id: "meesho", name: "Meesho", icon: "fas fa-gift", color: "#9c27b0", url: "https://meesho.com", logo: "🟣" }
     ];
     
-    // Product database (for demo detection)
+    // Product database for demo detection
     const productDatabase = [
-        { keywords: ["iphone", "apple", "iphone 15", "15 pro"], name: "iPhone 15 Pro", brand: "Apple", basePrice: 114900, image: "https://m.media-amazon.com/images/I/61VvJtL1LrL._SL1500_.jpg" },
-        { keywords: ["sony", "wh-1000xm5", "sony headphones", "1000xm5"], name: "Sony WH-1000XM5", brand: "Sony", basePrice: 24990, image: "https://m.media-amazon.com/images/I/61ZR5QmJkLL._SL1500_.jpg" },
-        { keywords: ["boat", "rockerz", "boAt rockerz", "rockerz 450"], name: "boAt Rockerz 450", brand: "boAt", basePrice: 1799, image: "https://m.media-amazon.com/images/I/61QpJq5xKxL._SL1500_.jpg" },
-        { keywords: ["nike", "air max", "nike air", "shoes", "nike shoes"], name: "Nike Air Max", brand: "Nike", basePrice: 3499, image: "https://m.media-amazon.com/images/I/61tF6qJ8xKL._SL1500_.jpg" },
-        { keywords: ["samsung", "galaxy", "s23", "s24"], name: "Samsung Galaxy S24", brand: "Samsung", basePrice: 79999, image: "https://m.media-amazon.com/images/I/61VvJtL1LrL._SL1500_.jpg" },
-        { keywords: ["headphones", "wireless", "earbuds", "neckband"], name: "Wireless Headphones", brand: "Generic", basePrice: 1999, image: "https://m.media-amazon.com/images/I/61ZR5QmJkLL._SL1500_.jpg" },
-        { keywords: ["speaker", "bluetooth speaker", "portable speaker"], name: "Bluetooth Speaker", brand: "boAt", basePrice: 2999, image: "https://m.media-amazon.com/images/I/61QpJq5xKxL._SL1500_.jpg" }
+        { keywords: ["iphone", "apple", "15 pro", "iphone15"], name: "iPhone 15 Pro", brand: "Apple", basePrice: 114900, image: "https://m.media-amazon.com/images/I/61VvJtL1LrL._SL1500_.jpg" },
+        { keywords: ["sony", "wh-1000xm5", "1000xm5"], name: "Sony WH-1000XM5", brand: "Sony", basePrice: 24990, image: "https://m.media-amazon.com/images/I/61ZR5QmJkLL._SL1500_.jpg" },
+        { keywords: ["boat", "rockerz", "450"], name: "boAt Rockerz 450", brand: "boAt", basePrice: 1799, image: "https://m.media-amazon.com/images/I/61QpJq5xKxL._SL1500_.jpg" },
+        { keywords: ["nike", "air max", "shoes"], name: "Nike Air Max", brand: "Nike", basePrice: 3499, image: "https://m.media-amazon.com/images/I/61tF6qJ8xKL._SL1500_.jpg" },
+        { keywords: ["samsung", "galaxy", "s24"], name: "Samsung Galaxy S24", brand: "Samsung", basePrice: 79999, image: "https://m.media-amazon.com/images/I/61VvJtL1LrL._SL1500_.jpg" },
+        { keywords: ["headphones", "wireless", "earbuds"], name: "Wireless Headphones", brand: "Generic", basePrice: 1999, image: "https://m.media-amazon.com/images/I/61ZR5QmJkLL._SL1500_.jpg" },
+        { keywords: ["speaker", "bluetooth", "portable"], name: "Bluetooth Speaker", brand: "boAt", basePrice: 2999, image: "https://m.media-amazon.com/images/I/61QpJq5xKxL._SL1500_.jpg" },
+        { keywords: ["smartwatch", "watch", "fitness"], name: "Smart Watch", brand: "Noise", basePrice: 2999, image: "https://m.media-amazon.com/images/I/61tF6qJ8xKL._SL1500_.jpg" }
     ];
+    
+    let currentStream = null;
+    let currentFacing = "environment"; // 'user' for front, 'environment' for back
     
     function switchTab(element) {
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         element.classList.add('active');
     }
     
-    // Camera functionality - real camera access
+    // Camera with back/front switch
     document.getElementById('cameraBtn').addEventListener('click', () => {
+        openCamera(currentFacing);
+    });
+    
+    document.getElementById('switchCameraBtn').addEventListener('click', () => {
+        currentFacing = (currentFacing === 'environment') ? 'user' : 'environment';
+        if(currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+        openCamera(currentFacing);
+    });
+    
+    function openCamera(facingMode) {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            // Create video element for camera preview
-            const video = document.createElement('video');
-            video.style.position = 'fixed';
-            video.style.top = '0';
-            video.style.left = '0';
-            video.style.width = '100%';
-            video.style.height = '100%';
-            video.style.objectFit = 'cover';
-            video.style.zIndex = '1000';
-            video.style.backgroundColor = 'black';
+            const constraints = {
+                video: { facingMode: { exact: facingMode } }
+            };
             
-            const captureBtn = document.createElement('button');
-            captureBtn.innerHTML = '📸 Capture';
-            captureBtn.style.position = 'fixed';
-            captureBtn.style.bottom = '30px';
-            captureBtn.style.left = '50%';
-            captureBtn.style.transform = 'translateX(-50%)';
-            captureBtn.style.padding = '15px 30px';
-            captureBtn.style.backgroundColor = '#1a73e8';
-            captureBtn.style.color = 'white';
-            captureBtn.style.border = 'none';
-            captureBtn.style.borderRadius = '50px';
-            captureBtn.style.fontSize = '18px';
-            captureBtn.style.zIndex = '1001';
-            captureBtn.style.cursor = 'pointer';
-            captureBtn.style.fontWeight = 'bold';
-            
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '✕ Close';
-            closeBtn.style.position = 'fixed';
-            closeBtn.style.top = '20px';
-            closeBtn.style.right = '20px';
-            closeBtn.style.padding = '10px 20px';
-            closeBtn.style.backgroundColor = '#e74c3c';
-            closeBtn.style.color = 'white';
-            closeBtn.style.border = 'none';
-            closeBtn.style.borderRadius = '30px';
-            closeBtn.style.zIndex = '1001';
-            closeBtn.style.cursor = 'pointer';
-            
-            document.body.appendChild(video);
-            document.body.appendChild(captureBtn);
-            document.body.appendChild(closeBtn);
-            
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(stream => {
-                    video.srcObject = stream;
-                    video.play();
-                    
-                    captureBtn.onclick = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob(blob => {
-                            const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
-                            stream.getTracks().forEach(track => track.stop());
-                            video.remove();
-                            captureBtn.remove();
-                            closeBtn.remove();
-                            processImage(file);
-                        }, 'image/jpeg');
-                    };
-                    
-                    closeBtn.onclick = () => {
-                        stream.getTracks().forEach(track => track.stop());
-                        video.remove();
-                        captureBtn.remove();
-                        closeBtn.remove();
-                    };
+                    currentStream = stream;
+                    showCameraUI(stream);
+                    document.getElementById('switchCameraBtn').style.display = 'block';
                 })
                 .catch(err => {
-                    alert("Camera access denied. Please allow camera access or use Upload option.");
-                    video.remove();
-                    captureBtn.remove();
-                    closeBtn.remove();
+                    // If back camera fails, try any camera
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            currentStream = stream;
+                            showCameraUI(stream);
+                            document.getElementById('switchCameraBtn').style.display = 'block';
+                        })
+                        .catch(err2 => {
+                            alert("Camera access denied. Please allow camera permission or use Upload option.");
+                        });
                 });
         } else {
             alert("Camera not supported on this device. Please use Upload option.");
         }
-    });
+    }
+    
+    function showCameraUI(stream) {
+        const video = document.createElement('video');
+        video.id = 'cameraVideo';
+        video.style.position = 'fixed';
+        video.style.top = '0';
+        video.style.left = '0';
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'cover';
+        video.style.zIndex = '1000';
+        video.style.backgroundColor = 'black';
+        video.autoplay = true;
+        video.srcObject = stream;
+        
+        const captureBtn = document.createElement('button');
+        captureBtn.innerHTML = '📸 Capture Photo';
+        captureBtn.style.position = 'fixed';
+        captureBtn.style.bottom = '80px';
+        captureBtn.style.left = '50%';
+        captureBtn.style.transform = 'translateX(-50%)';
+        captureBtn.style.padding = '15px 30px';
+        captureBtn.style.backgroundColor = '#1a73e8';
+        captureBtn.style.color = 'white';
+        captureBtn.style.border = 'none';
+        captureBtn.style.borderRadius = '50px';
+        captureBtn.style.fontSize = '18px';
+        captureBtn.style.zIndex = '1001';
+        captureBtn.style.cursor = 'pointer';
+        captureBtn.style.fontWeight = 'bold';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '✕ Close';
+        closeBtn.style.position = 'fixed';
+        closeBtn.style.top = '20px';
+        closeBtn.style.right = '20px';
+        closeBtn.style.padding = '10px 20px';
+        closeBtn.style.backgroundColor = '#e74c3c';
+        closeBtn.style.color = 'white';
+        closeBtn.style.border = 'none';
+        closeBtn.style.borderRadius = '30px';
+        closeBtn.style.zIndex = '1001';
+        closeBtn.style.cursor = 'pointer';
+        
+        document.body.appendChild(video);
+        document.body.appendChild(captureBtn);
+        document.body.appendChild(closeBtn);
+        
+        captureBtn.onclick = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(blob => {
+                const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+                if(currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                    currentStream = null;
+                }
+                video.remove();
+                captureBtn.remove();
+                closeBtn.remove();
+                document.getElementById('switchCameraBtn').style.display = 'none';
+                processImage(file);
+            }, 'image/jpeg');
+        };
+        
+        closeBtn.onclick = () => {
+            if(currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            video.remove();
+            captureBtn.remove();
+            closeBtn.remove();
+            document.getElementById('switchCameraBtn').style.display = 'none';
+        };
+    }
     
     // Upload functionality
     document.getElementById('uploadBtn').addEventListener('click', () => {
@@ -273,49 +307,46 @@
     });
     
     function processImage(file) {
-        // Show loading overlay
         const loadingDiv = document.getElementById('loadingOverlay');
         const step1 = document.getElementById('step1');
         const step2 = document.getElementById('step2');
         const step3 = document.getElementById('step3');
+        const step4 = document.getElementById('step4');
         
         loadingDiv.style.display = 'flex';
         step1.classList.add('active');
         step2.classList.remove('active');
         step3.classList.remove('active');
+        step4.classList.remove('active');
         
-        // Step 1: Uploading simulation
         setTimeout(() => {
             step1.classList.remove('active');
             step2.classList.add('active');
             
-            // Step 2: Detect product (simulate API call)
             setTimeout(() => {
-                // Detect product from "image" - using random or file name based
                 let detectedProduct = detectProductFromFile(file);
                 
                 step2.classList.remove('active');
                 step3.classList.add('active');
                 
-                // Step 3: Generate comparison
                 setTimeout(() => {
-                    const results = generateComparisonResults(detectedProduct);
-                    loadingDiv.style.display = 'none';
-                    displayResults(results, detectedProduct);
-                    addToRecentScans(detectedProduct.name, results.find(r => r.isCheapest)?.price || results[0]?.price || 0);
+                    step3.classList.remove('active');
+                    step4.classList.add('active');
                     
-                    // Reset file input
-                    document.getElementById('fileInput').value = '';
+                    setTimeout(() => {
+                        const results = generateComparisonResults(detectedProduct);
+                        loadingDiv.style.display = 'none';
+                        displayResults(results, detectedProduct);
+                        addToRecentScans(detectedProduct.name, results.find(r => r.isCheapest)?.price || results[0]?.price || 0);
+                        document.getElementById('fileInput').value = '';
+                    }, 500);
                 }, 800);
             }, 800);
-        }, 800);
+        }, 500);
     }
     
     function detectProductFromFile(file) {
-        // Simple detection based on filename or default
-        // In real implementation, this would call Channel3 API with image
         let fileName = file.name.toLowerCase();
-        
         for(let product of productDatabase) {
             for(let keyword of product.keywords) {
                 if(fileName.includes(keyword)) {
@@ -323,8 +354,6 @@
                 }
             }
         }
-        
-        // Default random product
         return { ...productDatabase[Math.floor(Math.random() * productDatabase.length)] };
     }
     
@@ -350,7 +379,7 @@
                 platformName: platform.name,
                 icon: platform.icon,
                 color: platform.color,
-                url: platform.url,
+                logo: platform.logo,
                 price: price,
                 originalPrice: originalPrice,
                 discount: discount,
@@ -407,34 +436,21 @@
     
     function trackClick(platform, price) {
         console.log(`Affiliate Click: ${platform} at ₹${price}`);
-        // You can integrate Cuelinks conversion tracking here
+        showToast(`🛒 Redirecting to ${platform}...`);
     }
     
     function addToRecentScans(productName, price) {
         let recentDiv = document.getElementById('recentScans');
-        let existingItems = recentDiv.querySelectorAll('.scan-item');
+        let newScan = document.createElement('div');
+        newScan.className = 'scan-item';
+        newScan.innerHTML = `<span class="name">${productName}</span><span class="price">₹${price.toLocaleString()}</span>`;
+        recentDiv.insertBefore(newScan, recentDiv.firstChild);
+        if(recentDiv.children.length > 5) recentDiv.removeChild(recentDiv.lastChild);
         
-        // Check if already exists
-        let exists = false;
-        existingItems.forEach(item => {
-            if(item.querySelector('.name')?.innerText === productName) exists = true;
-        });
-        
-        if(!exists) {
-            let newScan = document.createElement('div');
-            newScan.className = 'scan-item';
-            newScan.innerHTML = `<span class="name">${productName}</span><span class="price">₹${price.toLocaleString()}</span>`;
-            recentDiv.insertBefore(newScan, recentDiv.firstChild);
-            if(recentDiv.children.length > 5) recentDiv.removeChild(recentDiv.lastChild);
-        }
-        
-        // Save to localStorage
         let history = JSON.parse(localStorage.getItem('pricee_history') || '[]');
-        if(!history.some(h => h.product === productName)) {
-            history.unshift({ product: productName, price: price, timestamp: new Date().toISOString() });
-            if(history.length > 10) history.pop();
-            localStorage.setItem('pricee_history', JSON.stringify(history));
-        }
+        history.unshift({ product: productName, price: price, timestamp: new Date().toISOString() });
+        if(history.length > 10) history.pop();
+        localStorage.setItem('pricee_history', JSON.stringify(history));
     }
     
     function loadRecentScans() {
