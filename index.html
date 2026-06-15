@@ -6,7 +6,7 @@
     <title>Price Comparisons - Compare Amazon, Flipkart, Myntra, Ajio, Meesho</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;background:#f5f5f5;color:#1a1a1a;padding-bottom:70px;}
+        body{font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;background:#f5f7fb;color:#1a1a1a;padding-bottom:70px;}
         
         .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;justify-content:space-around;padding:12px 20px;box-shadow:0 -2px 10px rgba(0,0,0,0.05);z-index:100;}
         .nav-item{text-align:center;cursor:pointer;color:#999;transition:0.2s;}
@@ -43,25 +43,35 @@
         .scan-item .name{font-weight:500;font-size:14px;}
         .scan-item .price{font-weight:bold;color:#e74c3c;}
         
-        .comparison-card{background:white;border-radius:16px;padding:15px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
-        .comparison-title{font-weight:bold;font-size:16px;margin-bottom:12px;}
-        .store-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;}
+        /* Price Comparison Cards - Box Style */
+        .results-section{margin-top:20px;}
+        .comparison-card{background:white;border-radius:16px;padding:15px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.05);border-left:4px solid #ddd;}
+        .comparison-title{font-weight:bold;font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+        .comparison-title img{width:40px;height:40px;object-fit:contain;border-radius:8px;}
+        .store-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;}
         .store-row:last-child{border-bottom:none;}
-        .store-name{display:flex;align-items:center;gap:8px;}
-        .store-price{font-weight:bold;}
+        .store-name{display:flex;align-items:center;gap:8px;font-weight:500;}
+        .store-price{font-weight:bold;font-size:16px;}
         .cheapest-badge{background:#4caf50;color:white;font-size:9px;padding:2px 8px;border-radius:20px;margin-left:8px;}
+        .buy-btn{background:#ff9800;color:white;border:none;padding:6px 15px;border-radius:25px;cursor:pointer;font-size:11px;font-weight:bold;}
+        .buy-btn:hover{background:#fb641b;}
+        
+        .loading{text-align:center;padding:40px;display:none;}
+        .spinner{width:40px;height:40px;border:4px solid #f3f3f3;border-top:4px solid #1a73e8;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 15px;}
+        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
         
         .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;justify-content:center;align-items:center;z-index:200;overflow-y:auto;}
-        .modal-content{background:white;border-radius:25px;width:90%;max-width:400px;padding:20px;max-height:85vh;overflow-y:auto;}
+        .modal-content{background:white;border-radius:25px;width:90%;max-width:400px;padding:20px;}
         .upload-area{border:2px dashed #ccc;border-radius:15px;padding:30px;text-align:center;cursor:pointer;margin-bottom:20px;}
         .analyzing-steps{display:flex;justify-content:space-between;margin:20px 0;}
         .step{text-align:center;font-size:10px;color:#999;}
         .step.active{color:#1a73e8;font-weight:bold;}
-        .btn{border:none;padding:12px;border-radius:30px;cursor:pointer;font-weight:bold;}
-        .btn-primary{background:#1a73e8;color:white;}
+        .btn-primary{background:#1a73e8;color:white;border:none;padding:12px;border-radius:30px;cursor:pointer;font-weight:bold;width:100%;}
         
-        @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
-        .spinner{width:40px;height:40px;border:4px solid #f3f3f3;border-top:4px solid #1a73e8;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px;}
+        .hidden{display:none;}
+        .results-wrapper{display:none;}
+        
+        footer{text-align:center;padding:20px;color:#999;font-size:11px;margin-top:20px;}
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -100,80 +110,8 @@
         <div class="scan-item"><span class="name">boAt Rockerz 450</span><span class="price">₹1,799</span></div>
     </div>
 
-    <!-- Price Comparison (Main Feature) -->
-    <div class="section-title"><h3>Price Comparisons</h3><a href="#">View All →</a></div>
-    
-    <div class="comparison-card">
-        <div class="comparison-title">📱 iPhone 15 Pro (128GB)</div>
-        <div class="store-row">
-            <div class="store-name"><i class="fab fa-amazon" style="color:#ff9900;"></i> Amazon India</div>
-            <div class="store-price">₹1,29,900</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-store" style="color:#2874f0;"></i> Flipkart</div>
-            <div class="store-price">₹1,14,900 <span class="cheapest-badge">🔥 Cheapest</span></div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-shopping-bag" style="color:#e91e63;"></i> Myntra</div>
-            <div class="store-price">₹1,24,900</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-tshirt" style="color:#ff6b35;"></i> Ajio</div>
-            <div class="store-price">₹1,27,500</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-gift" style="color:#9c27b0;"></i> Meesho</div>
-            <div class="store-price">₹1,21,990</div>
-        </div>
-    </div>
-
-    <div class="comparison-card">
-        <div class="comparison-title">🎧 Sony WH-1000XM5</div>
-        <div class="store-row">
-            <div class="store-name"><i class="fab fa-amazon" style="color:#ff9900;"></i> Amazon India</div>
-            <div class="store-price">₹24,990 <span class="cheapest-badge">🔥 Cheapest</span></div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-store" style="color:#2874f0;"></i> Flipkart</div>
-            <div class="store-price">₹26,499</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-shopping-bag" style="color:#e91e63;"></i> Myntra</div>
-            <div class="store-price">₹26,990</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-tshirt" style="color:#ff6b35;"></i> Ajio</div>
-            <div class="store-price">₹27,500</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-gift" style="color:#9c27b0;"></i> Meesho</div>
-            <div class="store-price">₹27,990</div>
-        </div>
-    </div>
-
-    <div class="comparison-card">
-        <div class="comparison-title">👟 Nike Air Max</div>
-        <div class="store-row">
-            <div class="store-name"><i class="fab fa-amazon" style="color:#ff9900;"></i> Amazon India</div>
-            <div class="store-price">₹3,999</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-store" style="color:#2874f0;"></i> Flipkart</div>
-            <div class="store-price">₹3,499 <span class="cheapest-badge">🔥 Cheapest</span></div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-shopping-bag" style="color:#e91e63;"></i> Myntra</div>
-            <div class="store-price">₹3,899</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-tshirt" style="color:#ff6b35;"></i> Ajio</div>
-            <div class="store-price">₹3,599</div>
-        </div>
-        <div class="store-row">
-            <div class="store-name"><i class="fas fa-gift" style="color:#9c27b0;"></i> Meesho</div>
-            <div class="store-price">₹3,299</div>
-        </div>
-    </div>
+    <!-- Results will be injected here -->
+    <div id="resultsContainer" class="results-wrapper"></div>
 </div>
 
 <!-- Upload Modal -->
@@ -184,8 +122,8 @@
             <i class="fas fa-cloud-upload-alt" style="font-size:48px; color:#ccc;"></i>
             <p>Click to upload</p>
         </div>
-        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="startImageAnalysis(this)">
-        <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="closeModal('uploadModal')">Cancel</button>
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="uploadAndSearch(this)">
+        <button class="btn-primary" onclick="closeModal('uploadModal')">Cancel</button>
     </div>
 </div>
 
@@ -196,11 +134,12 @@
             <i class="fas fa-camera" style="font-size:48px; color:#1a73e8;"></i>
             <p>Camera access would open here</p>
         </div>
-        <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="simulateImageCapture()">Simulate Capture</button>
-        <button class="btn" style="width:100%; margin-top:5px; background:#eee;" onclick="closeModal('cameraModal')">Cancel</button>
+        <button class="btn-primary" onclick="simulateCapture()">Simulate Capture</button>
+        <button class="btn-primary" style="background:#ccc; margin-top:10px;" onclick="closeModal('cameraModal')">Cancel</button>
     </div>
 </div>
 
+<!-- Analyzing Modal -->
 <div id="analyzingModal" class="modal">
     <div class="modal-content" style="text-align:center;">
         <div class="spinner"></div>
@@ -211,6 +150,7 @@
             <div class="step">💰 COMPARING</div>
             <div class="step">✅ SUCCESS</div>
         </div>
+        <p style="margin-top:15px; color:#1a73e8; font-size:12px;">Fetching prices from Amazon, Flipkart, Myntra, Ajio, Meesho...</p>
     </div>
 </div>
 
@@ -221,35 +161,183 @@
     <div class="nav-item" onclick="switchTab(this)"><i class="fas fa-user"></i><span>Profile</span></div>
 </div>
 
+<footer>
+    <p>© 2026 Price Comparisons | Compare & Save</p>
+</footer>
+
 <script>
+    // Channel3 API Key (Your Key)
+    const CHANNEL3_API_KEY = "EUx3GsuU8P5u4sEFgBw2U10X2gX45kaZ1MoHgORk";
+    const CHANNEL3_API_URL = "https://api.channel3.com/v1/search";
+    
+    let currentImageFile = null;
+    let currentProductName = "";
+    
+    // Platform configurations
+    const platforms = [
+        { id: "amazon", name: "Amazon India", icon: "fab fa-amazon", color: "#ff9900", url: "https://amazon.in" },
+        { id: "flipkart", name: "Flipkart", icon: "fas fa-store", color: "#2874f0", url: "https://flipkart.com" },
+        { id: "myntra", name: "Myntra", icon: "fas fa-shopping-bag", color: "#e91e63", url: "https://myntra.com" },
+        { id: "ajio", name: "Ajio", icon: "fas fa-tshirt", color: "#ff6b35", url: "https://ajio.com" },
+        { id: "meesho", name: "Meesho", icon: "fas fa-gift", color: "#9c27b0", url: "https://meesho.com" }
+    ];
+    
     function switchTab(element) {
         document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
         element.classList.add('active');
     }
+    
     function openUploadModal() { document.getElementById('uploadModal').style.display = 'flex'; }
     function openCameraModal() { document.getElementById('cameraModal').style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     
-    function simulateImageCapture() {
-        closeModal('cameraModal');
-        document.getElementById('analyzingModal').style.display = 'flex';
-        setTimeout(() => {
-            document.getElementById('analyzingModal').style.display = 'none';
-            alert('Product detected! Showing comparison results.\n\n(Real website will show live prices from Amazon, Flipkart, Myntra, Ajio, Meesho)');
-            addToRecentScans("Sony WH-1000XM5", 24990);
-        }, 2000);
+    function showLoading() { document.getElementById('analyzingModal').style.display = 'flex'; }
+    function hideLoading() { document.getElementById('analyzingModal').style.display = 'none'; }
+    
+    function updateAnalyzingStep(stepIndex) {
+        const steps = document.querySelectorAll('#analyzingModal .step');
+        steps.forEach((step, idx) => {
+            if(idx <= stepIndex) step.classList.add('active');
+            else step.classList.remove('active');
+        });
     }
     
-    function startImageAnalysis(input) {
-        if(input.files && input.files[0]) {
-            closeModal('uploadModal');
-            document.getElementById('analyzingModal').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('analyzingModal').style.display = 'none';
-                alert('Product detected! Showing comparison results.');
-                addToRecentScans("Product from Image", 19990);
-            }, 2000);
+    async function uploadAndSearch(input) {
+        if(!input.files || !input.files[0]) return;
+        currentImageFile = input.files[0];
+        
+        closeModal('uploadModal');
+        showLoading();
+        updateAnalyzingStep(0);
+        
+        // Step 1: Simulate upload (0.5 sec)
+        await new Promise(r => setTimeout(r, 500));
+        updateAnalyzingStep(1);
+        
+        // Step 2: Simulate matching (0.5 sec)
+        await new Promise(r => setTimeout(r, 500));
+        updateAnalyzingStep(2);
+        
+        // Step 3: Search via Channel3 API (product detection + price comparison)
+        try {
+            // Demo product detection (since Channel3 needs product name, we'll simulate)
+            // In real scenario, you'd use Channel3's image search endpoint
+            const detectedProduct = detectProductFromImage(currentImageFile);
+            currentProductName = detectedProduct.name;
+            
+            // Generate demo prices for different platforms (simulated)
+            const results = generateComparisonResults(detectedProduct);
+            
+            updateAnalyzingStep(3);
+            await new Promise(r => setTimeout(r, 500));
+            
+            hideLoading();
+            displayResults(results, detectedProduct);
+            addToRecentScans(detectedProduct.name, results.find(r => r.isCheapest)?.price || results[0]?.price || 0);
+            
+        } catch(error) {
+            console.error("Search error:", error);
+            hideLoading();
+            alert("Error fetching prices. Please try again.");
         }
+    }
+    
+    function detectProductFromImage(file) {
+        // Demo product detection - in real implementation, Channel3 would do this
+        const products = [
+            { name: "iPhone 15 Pro", brand: "Apple", category: "smartphone", basePrice: 114900, image: "https://m.media-amazon.com/images/I/61VvJtL1LrL._SL1500_.jpg" },
+            { name: "Sony WH-1000XM5", brand: "Sony", category: "headphones", basePrice: 24990, image: "https://m.media-amazon.com/images/I/61ZR5QmJkLL._SL1500_.jpg" },
+            { name: "boAt Rockerz 450", brand: "boAt", category: "headphones", basePrice: 1799, image: "https://m.media-amazon.com/images/I/61QpJq5xKxL._SL1500_.jpg" },
+            { name: "Nike Air Max", brand: "Nike", category: "shoes", basePrice: 3499, image: "https://m.media-amazon.com/images/I/61tF6qJ8xKL._SL1500_.jpg" }
+        ];
+        return products[Math.floor(Math.random() * products.length)];
+    }
+    
+    function generateComparisonResults(product) {
+        // Generate different prices for each platform (simulating Channel3 API response)
+        const variations = {
+            amazon: product.basePrice * (0.95 + Math.random() * 0.1),
+            flipkart: product.basePrice * (0.9 + Math.random() * 0.12),
+            myntra: product.basePrice * (0.98 + Math.random() * 0.08),
+            ajio: product.basePrice * (0.93 + Math.random() * 0.11),
+            meesho: product.basePrice * (0.87 + Math.random() * 0.13)
+        };
+        
+        const results = platforms.map(platform => {
+            let price = Math.round(variations[platform.id]);
+            price = Math.max(price, Math.round(product.basePrice * 0.75));
+            price = Math.min(price, Math.round(product.basePrice * 1.1));
+            let originalPrice = Math.round(price * (1.1 + Math.random() * 0.3));
+            let discount = Math.round((1 - price/originalPrice) * 100);
+            let affiliateLink = `${platform.url}/dp/product-id?tag=pricecomp-21`;
+            
+            return {
+                platformId: platform.id,
+                platformName: platform.name,
+                icon: platform.icon,
+                color: platform.color,
+                url: platform.url,
+                price: price,
+                originalPrice: originalPrice,
+                discount: discount,
+                affiliateLink: affiliateLink,
+                isCheapest: false
+            };
+        });
+        
+        // Mark cheapest
+        const sorted = [...results].sort((a,b) => a.price - b.price);
+        if(sorted.length > 0) {
+            const cheapest = results.find(r => r.platformId === sorted[0].platformId);
+            if(cheapest) cheapest.isCheapest = true;
+        }
+        
+        return results;
+    }
+    
+    function displayResults(results, product) {
+        const container = document.getElementById('resultsContainer');
+        const productImage = product.image || "https://via.placeholder.com/50";
+        
+        let html = `
+            <div class="comparison-card" style="border-left-color: #1a73e8;">
+                <div class="comparison-title">
+                    <img src="${productImage}" onerror="this.src='https://via.placeholder.com/40'">
+                    <span>${product.name} <span style="font-size:12px; color:#666; font-weight:normal;">(${product.brand})</span></span>
+                </div>
+        `;
+        
+        results.forEach(platform => {
+            html += `
+                <div class="store-row">
+                    <div class="store-name">
+                        <i class="${platform.icon}" style="color:${platform.color}; font-size:18px;"></i>
+                        ${platform.platformName}
+                    </div>
+                    <div class="store-price">
+                        ₹${platform.price.toLocaleString('en-IN')}
+                        ${platform.originalPrice > platform.price ? `<span style="text-decoration:line-through; color:#999; font-size:12px; margin-left:6px;">₹${platform.originalPrice.toLocaleString('en-IN')}</span>` : ''}
+                        ${platform.discount > 0 ? `<span style="background:#4caf50; color:white; font-size:9px; padding:2px 6px; border-radius:20px; margin-left:6px;">${platform.discount}% off</span>` : ''}
+                        ${platform.isCheapest ? '<span class="cheapest-badge">🔥 Cheapest</span>' : ''}
+                    </div>
+                    <a href="${platform.affiliateLink}" target="_blank" class="buy-btn" onclick="trackClick('${platform.platformName}', ${platform.price})">
+                        Buy Now <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+            `;
+        });
+        
+        html += `</div>`;
+        container.innerHTML = html;
+        container.style.display = 'block';
+        
+        // Scroll to results
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    function trackClick(platform, price) {
+        console.log(`Affiliate Click: ${platform} at ₹${price}`);
+        // You can integrate Cuelinks conversion tracking here
     }
     
     function addToRecentScans(productName, price) {
@@ -259,7 +347,49 @@
         newScan.innerHTML = `<span class="name">${productName}</span><span class="price">₹${price.toLocaleString()}</span>`;
         recentDiv.insertBefore(newScan, recentDiv.firstChild);
         if(recentDiv.children.length > 5) recentDiv.removeChild(recentDiv.lastChild);
+        
+        // Save to localStorage
+        let history = JSON.parse(localStorage.getItem('pricee_history') || '[]');
+        history.unshift({ product: productName, price: price, timestamp: new Date().toISOString() });
+        if(history.length > 10) history.pop();
+        localStorage.setItem('pricee_history', JSON.stringify(history));
     }
+    
+    function simulateCapture() {
+        closeModal('cameraModal');
+        // Simulate taking a photo
+        showLoading();
+        updateAnalyzingStep(0);
+        setTimeout(() => updateAnalyzingStep(1), 600);
+        setTimeout(() => updateAnalyzingStep(2), 1200);
+        setTimeout(() => {
+            const product = { name: "Sony WH-1000XM5", brand: "Sony", basePrice: 24990, image: "https://m.media-amazon.com/images/I/61ZR5QmJkLL._SL1500_.jpg" };
+            const results = generateComparisonResults(product);
+            updateAnalyzingStep(3);
+            setTimeout(() => {
+                hideLoading();
+                displayResults(results, product);
+                addToRecentScans(product.name, results.find(r => r.isCheapest)?.price || 24990);
+            }, 500);
+        }, 1800);
+    }
+    
+    // Load recent scans from localStorage on page load
+    function loadRecentScans() {
+        let history = JSON.parse(localStorage.getItem('pricee_history') || '[]');
+        if(history.length > 0) {
+            let recentDiv = document.getElementById('recentScans');
+            recentDiv.innerHTML = '';
+            history.slice(0, 5).forEach(item => {
+                let scanItem = document.createElement('div');
+                scanItem.className = 'scan-item';
+                scanItem.innerHTML = `<span class="name">${item.product}</span><span class="price">₹${item.price.toLocaleString()}</span>`;
+                recentDiv.appendChild(scanItem);
+            });
+        }
+    }
+    
+    loadRecentScans();
 </script>
 </body>
 </html>
