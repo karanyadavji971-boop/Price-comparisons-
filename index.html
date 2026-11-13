@@ -56,8 +56,8 @@
         .owner-total { background: #e3f2fd; padding: 16px; border-radius: 10px; text-align: center; border: 1px solid #90caf9; }
         .owner-total strong { font-size: 25px; color: #1565c0; display: block; margin-top: 5px; }
         
-        /* History Container (Initially Hidden) */
-        #historyContainer { display: none; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+        /* History Containers (Initially Hidden) */
+        #historyContainer, #ownerHistoryContainer { display: none; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
 
         .entry { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; background: #fff; }
         .entry p { margin: 6px 0; font-size: 14px; color: #334155; }
@@ -97,29 +97,23 @@
 
         function checkAndUpdateDate() {
             const now = new Date();
-            // स्थानीय समय (Local Time) के हिसाब से तारीख निकालें
             const todayStr = now.getFullYear() + "-" + 
                              String(now.getMonth() + 1).padStart(2, '0') + "-" + 
                              String(now.getDate()).padStart(2, '0');
             
-            // अगर तारीख बदल गई है (यानी रात 12 बज गए हैं)
             if (currentDateStr !== todayStr) {
                 currentDateStr = todayStr;
                 
-                // फॉर्म में तारीख अपडेट करें
                 const dateInput = document.getElementById("date");
                 const ownerDateInput = document.getElementById("ownerDate");
                 if (dateInput) dateInput.value = todayStr;
                 if (ownerDateInput) ownerDateInput.value = todayStr;
 
-                // अगर पेज लोड हो चुका है, तो डेटा को फ़िल्टर करें ताकि पुराना डेटा छिप जाए
                 if (auth.currentUser) {
                     filterTodayData();
                 }
             }
         }
-
-        // हर 5 सेकंड में चेक करें
         setInterval(checkAndUpdateDate, 5000);
 
         // ================= AUTHENTICATION =================
@@ -148,9 +142,7 @@
                 document.getElementById("appScreen").style.display = "block";
                 document.getElementById("userEmail").textContent = user.email;
                 
-                // लॉगिन होते ही तारीख चेक करें
                 checkAndUpdateDate();
-                
                 loadData();
                 loadOwnerData();
             } else {
@@ -165,7 +157,7 @@
         let ownerEntries = [];
         let currentEditId = null;
 
-        // History Show/Hide Logic (शुरुआत में हमेशा बंद रहेगा)
+        // Toggles for Histories
         window.toggleHistory = function() {
             const container = document.getElementById("historyContainer");
             const btn = document.getElementById("toggleHistoryBtn");
@@ -178,28 +170,37 @@
             }
         };
 
+        window.toggleOwnerHistory = function() {
+            const container = document.getElementById("ownerHistoryContainer");
+            const btn = document.getElementById("toggleOwnerHistoryBtn");
+            if (container.style.display === "none" || container.style.display === "") {
+                container.style.display = "block";
+                btn.textContent = "🔼 Hide Owner Payments";
+            } else {
+                container.style.display = "none";
+                btn.textContent = "🔽 Show Owner Payments";
+            }
+        };
+
         async function loadData() {
             document.getElementById("records").innerHTML = "<p class='muted'>Loading data...</p>";
             try {
                 const q = query(repairsCollection, orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
                 allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                filterTodayData(); // लोड होते ही आज का डेटा दिखाएं
+                filterTodayData();
             } catch (e) {
                 console.error(e);
                 document.getElementById("records").innerHTML = "<p class='muted'>Data load error: " + e.message + "</p>";
             }
         }
 
-        // सिर्फ आज की तारीख का डेटा दिखाने का फंक्शन
         function filterTodayData() {
-            // फ़िल्टर तारीख को आज की तारीख पर सेट करें
             document.getElementById("filterDate").value = currentDateStr;
-            
             filteredEntries = allEntries.filter(x => x.date === currentDateStr);
             render();
             
-            // हिस्ट्री को बंद रखें
+            // Hide history by default when data refreshes
             document.getElementById("historyContainer").style.display = "none";
             document.getElementById("toggleHistoryBtn").textContent = "🔽 Show Repair History";
         }
@@ -265,6 +266,10 @@
                 document.getElementById("ownerAmount").value = "";
                 document.getElementById("ownerNote").value = "";
                 loadOwnerData();
+                
+                // Open history when new payment is saved
+                document.getElementById("ownerHistoryContainer").style.display = "block";
+                document.getElementById("toggleOwnerHistoryBtn").textContent = "🔼 Hide Owner Payments";
             } catch (e) {
                 alert("Error: " + e.message);
             }
@@ -301,7 +306,6 @@
             document.getElementById("saveBtn").textContent = "Update Entry";
             window.scrollTo({ top: 0, behavior: "smooth" });
             
-            // एडिट करते समय हिस्ट्री खोल दें ताकि यूजर उसे देख सके
             document.getElementById("historyContainer").style.display = "block";
             document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
@@ -309,7 +313,7 @@
         window.resetForm = function() {
             currentEditId = null;
             ["customer", "phone", "model", "problem", "amount"].forEach(id => document.getElementById(id).value = "");
-            checkAndUpdateDate(); // आज की तारीख डालें
+            checkAndUpdateDate();
             document.getElementById("payment").value = "Paid";
             document.getElementById("formTitle").textContent = "➕ New Repair Entry";
             document.getElementById("saveBtn").textContent = "💾 Save to Cloud";
@@ -392,7 +396,6 @@
 
             render();
             
-            // जब यूजर फ़िल्टर करे, तो हिस्ट्री खोल दें
             document.getElementById("historyContainer").style.display = "block";
             document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
@@ -403,7 +406,6 @@
             applyFilters();
         };
 
-        // पेज लोड होते ही तारीख सेट करें
         window.onload = function() {
             checkAndUpdateDate();
         };
@@ -460,8 +462,13 @@
             <strong id="ownerTotalAmount">₹0</strong>
         </div>
 
-        <div id="ownerRecords" style="margin-top: 15px;"><p class="muted">Loading...</p></div>
-        <div id="ownerLoader">⏳ Loading...</div>
+        <!-- Owner History Hide/Show -->
+        <button class="toggle-btn" id="toggleOwnerHistoryBtn" onclick="toggleOwnerHistory()" style="background:#90caf9; color:#000; margin-top:15px;">🔽 Show Owner Payments</button>
+        
+        <div id="ownerHistoryContainer">
+            <div id="ownerRecords" style="margin-top: 15px;"><p class="muted">Loading...</p></div>
+            <div id="ownerLoader">⏳ Loading...</div>
+        </div>
     </div>
 
     <!-- Search & Filter -->
