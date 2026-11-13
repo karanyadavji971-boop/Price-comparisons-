@@ -69,12 +69,11 @@
         .owner-entry p { margin: 0; font-size: 14px; }
         .owner-entry .amount { font-weight: 800; color: #1565c0; font-size: 16px; }
         #loader, #ownerLoader { display: none; text-align: center; padding: 15px; font-weight: 600; color: #087f5b; }
-        #loadMoreBtn { display: none; background: #087f5b; margin-top: 15px; }
     </style>
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, limit, startAfter, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // 🔴 आपकी Firebase Configuration 🔴
@@ -118,7 +117,7 @@
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("appScreen").style.display = "block";
                 document.getElementById("userEmail").textContent = user.email;
-                loadData(false);
+                loadData();
                 loadOwnerData();
             } else {
                 document.getElementById("loginScreen").style.display = "flex";
@@ -127,13 +126,10 @@
         });
 
         // ================= DATA LOGIC =================
-        let entries = [];
+        let allEntries = []; // सारा डेटा यहाँ सेव रहेगा
+        let filteredEntries = []; // जो स्क्रीन पर दिखेगा
         let ownerEntries = [];
         let currentEditId = null;
-        let lastVisibleDoc = null;
-        let isFetching = false;
-        let hasMoreData = true;
-        const BATCH_SIZE = 20;
 
         // History Show/Hide Logic
         window.toggleHistory = function() {
@@ -142,63 +138,24 @@
             if (container.style.display === "none" || container.style.display === "") {
                 container.style.display = "block";
                 btn.textContent = "🔼 Hide Repair History";
-                if(entries.length === 0) loadData(false);
             } else {
                 container.style.display = "none";
                 btn.textContent = "🔽 Show Repair History";
             }
         };
 
-        async function loadData(loadMore = false) {
-            if (isFetching) return;
-            isFetching = true;
-            
-            if (!loadMore) {
-                entries = []; lastVisibleDoc = null; hasMoreData = true;
-                document.getElementById("records").innerHTML = "<p class='muted'>Loading data...</p>";
-                document.getElementById("loadMoreBtn").style.display = "none";
-            } else { 
-                document.getElementById("loader").style.display = "block"; 
-            }
-
+        async function loadData() {
+            document.getElementById("records").innerHTML = "<p class='muted'>Loading data...</p>";
             try {
-                let q;
-                const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
-                const filterDate = document.getElementById("filterDate").value;
-
-                if (filterDate) {
-                    q = query(repairsCollection, where("date", "==", filterDate), orderBy("createdAt", "desc"), limit(BATCH_SIZE));
-                } else if (searchTerm) {
-                    q = query(repairsCollection, orderBy("createdAt", "desc"), limit(100));
-                } else {
-                    q = query(repairsCollection, orderBy("createdAt", "desc"), limit(BATCH_SIZE));
-                }
-
+                const q = query(repairsCollection, orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
-                if (snapshot.empty) { hasMoreData = false; } 
-                else {
-                    let newEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    if (searchTerm) {
-                        newEntries = newEntries.filter(x => 
-                            x.customer.toLowerCase().includes(searchTerm) || 
-                            x.model.toLowerCase().includes(searchTerm) || 
-                            x.problem.toLowerCase().includes(searchTerm)
-                        );
-                    }
-                    // डुप्लीकेट रोकने के लिए फ़िल्टर
-                    const existingIds = new Set(entries.map(e => e.id));
-                    const uniqueNewEntries = newEntries.filter(e => !existingIds.has(e.id));
-                    
-                    entries = loadMore ? [...entries, ...uniqueNewEntries] : uniqueNewEntries;
-                    lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
-                }
-                render();
+                allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                // पहली बार लोड होने पर फिल्टर लगाएं (जो डिफ़ॉल्ट रूप से सब कुछ दिखाएगा)
+                applyFilters();
             } catch (e) {
                 console.error(e);
                 document.getElementById("records").innerHTML = "<p class='muted'>Data load error: " + e.message + "</p>";
-            } finally {
-                isFetching = false;
-                document.getElementById("loader").style.display = "none";
             }
         }
 
@@ -244,7 +201,7 @@
                     alert("✅ Entry Saved!");
                 }
                 resetForm();
-                loadData(false);
+                loadData(); // फिर से डेटा लोड करें
             } catch (e) {
                 alert("Error saving: " + e.message);
             }
@@ -272,7 +229,7 @@
             if (!confirm("Delete this record?")) return;
             try {
                 await deleteDoc(doc(db, "repairs", id));
-                loadData(false);
+                loadData();
             } catch (e) { alert(e.message); }
         };
 
@@ -285,7 +242,7 @@
         };
 
         window.editEntry = function(id) {
-            const x = entries.find(e => e.id === id);
+            const x = allEntries.find(e => e.id === id);
             if (!x) return;
             currentEditId = x.id;
             document.getElementById("date").value = x.date;
@@ -315,8 +272,14 @@
         // ================= RENDER =================
         window.render = function() {
             const box = document.getElementById("records");
-            if (!entries.length) { box.innerHTML = "<p class='muted'>Koi record nahi mila.</p>"; return; }
-            box.innerHTML = entries.map(x => `
+            if (!filteredEntries.length) { 
+                box.innerHTML = "<p class='muted'>Is date/serch ka koi record nahi mila.</p>"; 
+                document.getElementById("count").textContent = "0";
+                document.getElementById("total").textContent = "₹0";
+                return; 
+            }
+            
+            box.innerHTML = filteredEntries.map(x => `
                 <div class="entry">
                     <p><b>${escapeHTML(x.date)}</b></p>
                     <p>👤 ${escapeHTML(x.customer)}</p>
@@ -331,17 +294,11 @@
                     </div>
                 </div>
             `).join("");
-            const sum = entries.reduce((s, x) => s + Number(x.amount || 0), 0);
-            document.getElementById("count").textContent = entries.length;
+            
+            // टोटल सिर्फ फिल्टर हुए डेटा का
+            const sum = filteredEntries.reduce((s, x) => s + Number(x.amount || 0), 0);
+            document.getElementById("count").textContent = filteredEntries.length;
             document.getElementById("total").textContent = "₹" + sum.toLocaleString("en-IN");
-
-            // Load More Button Logic
-            const loadMoreBtn = document.getElementById("loadMoreBtn");
-            if (hasMoreData && entries.length >= BATCH_SIZE) {
-                loadMoreBtn.style.display = "block";
-            } else {
-                loadMoreBtn.style.display = "none";
-            }
         };
 
         window.renderOwnerData = function() {
@@ -374,11 +331,34 @@
             return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         };
 
-        window.applyFilters = function() { loadData(false); };
+        // ================= SEARCH & FILTER LOGIC =================
+        window.applyFilters = function() {
+            const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+            const filterDate = document.getElementById("filterDate").value;
+
+            filteredEntries = allEntries.filter(x => {
+                // तारीख से फिल्टर (अगर तारीख चुनी गई है)
+                if (filterDate && x.date !== filterDate) return false;
+                
+                // सर्च से फिल्टर (अगर कुछ सर्च किया गया है)
+                if (searchTerm) {
+                    const match = [x.customer, x.phone, x.model, x.problem].join(" ").toLowerCase().includes(searchTerm);
+                    if (!match) return false;
+                }
+                return true;
+            });
+
+            render();
+            
+            // History खोल दें ताकि यूजर रिजल्ट देख सके
+            document.getElementById("historyContainer").style.display = "block";
+            document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
+        };
+
         window.clearFilters = function() {
             document.getElementById("searchInput").value = "";
             document.getElementById("filterDate").value = "";
-            loadData(false);
+            applyFilters(); // सब कुछ दिखाएं
         };
 
         // Init Dates
@@ -469,7 +449,6 @@
         <div id="historyContainer">
             <div id="records"><p class="muted">Loading from cloud...</p></div>
             <div id="loader">⏳ Loading...</div>
-            <button id="loadMoreBtn" onclick="loadData(true)">⏬ Load More Records</button>
         </div>
     </div>
 
