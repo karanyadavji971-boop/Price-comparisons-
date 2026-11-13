@@ -42,6 +42,7 @@
         button.secondary { background: #455a64; }
         button.danger { background: #c62828; }
         button.small { padding: 7px 10px; font-size: 12px; margin: 3px; width: auto; }
+        button.toggle-btn { background: #fbbf24; color: #000; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
 
         /* Search & Filter */
         .filter-row { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -54,6 +55,10 @@
         .total strong { font-size: 25px; color: #087f5b; display: block; margin-top: 5px; }
         .owner-total { background: #e3f2fd; padding: 16px; border-radius: 10px; text-align: center; border: 1px solid #90caf9; }
         .owner-total strong { font-size: 25px; color: #1565c0; display: block; margin-top: 5px; }
+        
+        /* History Container (Initially Hidden) */
+        #historyContainer { display: none; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+
         .entry { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; background: #fff; }
         .entry p { margin: 6px 0; font-size: 14px; color: #334155; }
         .actions { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
@@ -64,6 +69,7 @@
         .owner-entry p { margin: 0; font-size: 14px; }
         .owner-entry .amount { font-weight: 800; color: #1565c0; font-size: 16px; }
         #loader, #ownerLoader { display: none; text-align: center; padding: 15px; font-weight: 600; color: #087f5b; }
+        #loadMoreBtn { display: none; background: #087f5b; margin-top: 15px; }
     </style>
     
     <script type="module">
@@ -129,13 +135,31 @@
         let hasMoreData = true;
         const BATCH_SIZE = 20;
 
+        // History Show/Hide Logic
+        window.toggleHistory = function() {
+            const container = document.getElementById("historyContainer");
+            const btn = document.getElementById("toggleHistoryBtn");
+            if (container.style.display === "none" || container.style.display === "") {
+                container.style.display = "block";
+                btn.textContent = "🔼 Hide Repair History";
+                if(entries.length === 0) loadData(false);
+            } else {
+                container.style.display = "none";
+                btn.textContent = "🔽 Show Repair History";
+            }
+        };
+
         async function loadData(loadMore = false) {
-            if (isFetching || (!loadMore && !hasMoreData)) return;
+            if (isFetching) return;
             isFetching = true;
+            
             if (!loadMore) {
                 entries = []; lastVisibleDoc = null; hasMoreData = true;
                 document.getElementById("records").innerHTML = "<p class='muted'>Loading data...</p>";
-            } else { document.getElementById("loader").style.display = "block"; }
+                document.getElementById("loadMoreBtn").style.display = "none";
+            } else { 
+                document.getElementById("loader").style.display = "block"; 
+            }
 
             try {
                 let q;
@@ -161,7 +185,11 @@
                             x.problem.toLowerCase().includes(searchTerm)
                         );
                     }
-                    entries = loadMore ? [...entries, ...newEntries] : newEntries;
+                    // डुप्लीकेट रोकने के लिए फ़िल्टर
+                    const existingIds = new Set(entries.map(e => e.id));
+                    const uniqueNewEntries = newEntries.filter(e => !existingIds.has(e.id));
+                    
+                    entries = loadMore ? [...entries, ...uniqueNewEntries] : uniqueNewEntries;
                     lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
                 }
                 render();
@@ -270,6 +298,9 @@
             document.getElementById("formTitle").textContent = "✏️ Edit Entry";
             document.getElementById("saveBtn").textContent = "Update Entry";
             window.scrollTo({ top: 0, behavior: "smooth" });
+            
+            document.getElementById("historyContainer").style.display = "block";
+            document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
 
         window.resetForm = function() {
@@ -303,6 +334,14 @@
             const sum = entries.reduce((s, x) => s + Number(x.amount || 0), 0);
             document.getElementById("count").textContent = entries.length;
             document.getElementById("total").textContent = "₹" + sum.toLocaleString("en-IN");
+
+            // Load More Button Logic
+            const loadMoreBtn = document.getElementById("loadMoreBtn");
+            if (hasMoreData && entries.length >= BATCH_SIZE) {
+                loadMoreBtn.style.display = "block";
+            } else {
+                loadMoreBtn.style.display = "none";
+            }
         };
 
         window.renderOwnerData = function() {
@@ -341,14 +380,6 @@
             document.getElementById("filterDate").value = "";
             loadData(false);
         };
-
-        window.addEventListener('scroll', () => {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
-                if(!isFetching && hasMoreData && !document.getElementById("filterDate").value) {
-                    loadData(true);
-                }
-            }
-        });
 
         // Init Dates
         document.getElementById("date").value = new Date().toISOString().slice(0, 10);
@@ -393,6 +424,23 @@
         <button class="secondary" onclick="resetForm()">Clear Form</button>
     </div>
 
+    <!-- Owner Payments -->
+    <div class="card">
+        <h3>👨‍💼 Malik se Payment (Owner Payment)</h3>
+        <label>Date</label><input type="date" id="ownerDate">
+        <label>Amount (₹)</label><input type="number" id="ownerAmount" min="1" placeholder="Jaise: 500 ya 1000">
+        <label>Note (Optional)</label><input type="text" id="ownerNote" placeholder="Jaise: Daily payment, Advance">
+        <button onclick="saveOwnerPayment()" style="background:#1565c0;">💾 Save Owner Payment</button>
+
+        <div class="owner-total" style="margin-top: 15px;">
+            <div>Total Received from Owner</div>
+            <strong id="ownerTotalAmount">₹0</strong>
+        </div>
+
+        <div id="ownerRecords" style="margin-top: 15px;"><p class="muted">Loading...</p></div>
+        <div id="ownerLoader">⏳ Loading...</div>
+    </div>
+
     <!-- Search & Filter -->
     <div class="card">
         <h3>🔍 Search / Filter</h3>
@@ -414,28 +462,15 @@
         </div>
     </div>
 
-    <!-- Repair History -->
+    <!-- Repair History (Hidden by Default) -->
     <div class="card">
-        <h3>📋 Repair History</h3>
-        <div id="records"><p class="muted">Loading from cloud...</p></div>
-        <div id="loader">⏳ Loading more...</div>
-    </div>
-
-    <!-- Owner Payments -->
-    <div class="card">
-        <h3>👨‍💼 Malik se Payment (Owner Payment)</h3>
-        <label>Date</label><input type="date" id="ownerDate">
-        <label>Amount (₹)</label><input type="number" id="ownerAmount" min="1" placeholder="Jaise: 500 ya 1000">
-        <label>Note (Optional)</label><input type="text" id="ownerNote" placeholder="Jaise: Daily payment, Advance">
-        <button onclick="saveOwnerPayment()" style="background:#1565c0;">💾 Save Owner Payment</button>
-
-        <div class="owner-total" style="margin-top: 15px;">
-            <div>Total Received from Owner</div>
-            <strong id="ownerTotalAmount">₹0</strong>
+        <button class="toggle-btn" id="toggleHistoryBtn" onclick="toggleHistory()">🔽 Show Repair History</button>
+        
+        <div id="historyContainer">
+            <div id="records"><p class="muted">Loading from cloud...</p></div>
+            <div id="loader">⏳ Loading...</div>
+            <button id="loadMoreBtn" onclick="loadData(true)">⏬ Load More Records</button>
         </div>
-
-        <div id="ownerRecords" style="margin-top: 15px;"><p class="muted">Loading...</p></div>
-        <div id="ownerLoader">⏳ Loading...</div>
     </div>
 
     <p class="muted" style="text-align:center; margin-bottom: 20px;">Data securely stored on Firebase Cloud</p>
