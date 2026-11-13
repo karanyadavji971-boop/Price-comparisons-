@@ -93,23 +93,29 @@
         const ownerPaymentsCollection = collection(db, "ownerPayments");
 
         // ================= AUTO DATE CHANGE LOGIC =================
-        function updateDates() {
-            const todayStr = new Date().toISOString().slice(0, 10);
+        let lastDate = "";
+
+        function checkAndUpdateDate() {
+            const now = new Date();
+            // स्थानीय समय (Local Time) के हिसाब से तारीख निकालें
+            const todayStr = now.getFullYear() + "-" + 
+                             String(now.getMonth() + 1).padStart(2, '0') + "-" + 
+                             String(now.getDate()).padStart(2, '0');
             
-            // अगर पेज खुला है और तारीख पुरानी है, तो उसे अपडेट करें
-            const dateInput = document.getElementById("date");
-            const ownerDateInput = document.getElementById("ownerDate");
-            
-            if (dateInput && dateInput.value < todayStr) {
-                dateInput.value = todayStr;
-            }
-            if (ownerDateInput && ownerDateInput.value < todayStr) {
-                ownerDateInput.value = todayStr;
+            if (lastDate !== todayStr) {
+                lastDate = todayStr;
+                const dateInput = document.getElementById("date");
+                const ownerDateInput = document.getElementById("ownerDate");
+                
+                if (dateInput) dateInput.value = todayStr;
+                if (ownerDateInput) ownerDateInput.value = todayStr;
+                
+                console.log("Date updated to: " + todayStr);
             }
         }
 
-        // हर 1 मिनट में चेक करें कि तारीख बदली या नहीं
-        setInterval(updateDates, 60000);
+        // हर 5 सेकंड में तारीख चेक करें
+        setInterval(checkAndUpdateDate, 5000);
 
         // ================= AUTHENTICATION =================
         window.login = async function() {
@@ -136,6 +142,10 @@
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("appScreen").style.display = "block";
                 document.getElementById("userEmail").textContent = user.email;
+                
+                // लॉगिन होते ही तारीख चेक करें
+                checkAndUpdateDate();
+                
                 loadData();
                 loadOwnerData();
             } else {
@@ -280,7 +290,7 @@
         window.resetForm = function() {
             currentEditId = null;
             ["customer", "phone", "model", "problem", "amount"].forEach(id => document.getElementById(id).value = "");
-            document.getElementById("date").value = new Date().toISOString().slice(0, 10);
+            checkAndUpdateDate(); // रीसेट करते समय आज की तारीख डालें
             document.getElementById("payment").value = "Paid";
             document.getElementById("formTitle").textContent = "➕ New Repair Entry";
             document.getElementById("saveBtn").textContent = "💾 Save to Cloud";
@@ -373,9 +383,10 @@
             applyFilters();
         };
 
-        // Init Dates
-        document.getElementById("date").value = new Date().toISOString().slice(0, 10);
-        document.getElementById("ownerDate").value = new Date().toISOString().slice(0, 10);
+        // पेज लोड होते ही तारीख सेट करें
+        window.onload = function() {
+            checkAndUpdateDate();
+        };
     </script>
 </head>
 <body>
