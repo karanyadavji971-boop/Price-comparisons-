@@ -188,6 +188,8 @@
                 const q = query(repairsCollection, orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
                 allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                
+                updateCustomerDatalist();
                 filterTodayData();
             } catch (e) {
                 console.error(e);
@@ -195,12 +197,22 @@
             }
         }
 
+        function updateCustomerDatalist() {
+            // सबसे पहले 'Customer' जोड़ें
+            const names = new Set(["Customer", "Arushi telecom", "Abdul", "Mamta", "Naaz", "Sheetal"]);
+            allEntries.forEach(entry => {
+                if (entry.customer) names.add(entry.customer);
+            });
+            
+            const datalist = document.getElementById("customerList");
+            datalist.innerHTML = Array.from(names).map(name => `<option value="${name}">`).join('');
+        }
+
         function filterTodayData() {
             document.getElementById("filterDate").value = currentDateStr;
             filteredEntries = allEntries.filter(x => x.date === currentDateStr);
             render();
             
-            // Hide history by default when data refreshes
             document.getElementById("historyContainer").style.display = "none";
             document.getElementById("toggleHistoryBtn").textContent = "🔽 Show Repair History";
         }
@@ -267,7 +279,6 @@
                 document.getElementById("ownerNote").value = "";
                 loadOwnerData();
                 
-                // Open history when new payment is saved
                 document.getElementById("ownerHistoryContainer").style.display = "block";
                 document.getElementById("toggleOwnerHistoryBtn").textContent = "🔼 Hide Owner Payments";
             } catch (e) {
@@ -438,7 +449,19 @@
     <div class="card">
         <h3 id="formTitle">➕ New Repair Entry</h3>
         <label>Date</label><input type="date" id="date">
-        <label>Customer Name</label><input id="customer" placeholder="Customer ka naam">
+        
+        <label>Customer Name</label>
+        <input id="customer" placeholder="Customer ka naam" list="customerList">
+        <datalist id="customerList">
+            <!-- यहाँ अपने पुराने नाम दिखेंगे -->
+            <option value="Customer">
+            <option value="Arushi telecom">
+            <option value="Abdul">
+            <option value="Mamta">
+            <option value="Naaz">
+            <option value="Sheetal">
+        </datalist>
+
         <label>Mobile Number</label><input id="phone" type="tel" placeholder="Customer mobile number">
         <label>Mobile Model</label><input id="model" placeholder="Jaise: Redmi Note 12">
         <label>Problem / Repair Work</label><textarea id="problem" placeholder="Kya problem hai?"></textarea>
@@ -462,7 +485,6 @@
             <strong id="ownerTotalAmount">₹0</strong>
         </div>
 
-        <!-- Owner History Hide/Show -->
         <button class="toggle-btn" id="toggleOwnerHistoryBtn" onclick="toggleOwnerHistory()" style="background:#90caf9; color:#000; margin-top:15px;">🔽 Show Owner Payments</button>
         
         <div id="ownerHistoryContainer">
