@@ -92,8 +92,8 @@
         const repairsCollection = collection(db, "repairs");
         const ownerPaymentsCollection = collection(db, "ownerPayments");
 
-        // ================= AUTO DATE CHANGE LOGIC =================
-        let lastDate = "";
+        // ================= AUTO DATE & DATA UPDATE LOGIC =================
+        let currentDateStr = "";
 
         function checkAndUpdateDate() {
             const now = new Date();
@@ -102,19 +102,24 @@
                              String(now.getMonth() + 1).padStart(2, '0') + "-" + 
                              String(now.getDate()).padStart(2, '0');
             
-            if (lastDate !== todayStr) {
-                lastDate = todayStr;
+            // अगर तारीख बदल गई है (यानी रात 12 बज गए हैं)
+            if (currentDateStr !== todayStr) {
+                currentDateStr = todayStr;
+                
+                // फॉर्म में तारीख अपडेट करें
                 const dateInput = document.getElementById("date");
                 const ownerDateInput = document.getElementById("ownerDate");
-                
                 if (dateInput) dateInput.value = todayStr;
                 if (ownerDateInput) ownerDateInput.value = todayStr;
-                
-                console.log("Date updated to: " + todayStr);
+
+                // अगर पेज लोड हो चुका है, तो डेटा को फ़िल्टर करें ताकि पुराना डेटा छिप जाए
+                if (auth.currentUser) {
+                    filterTodayData();
+                }
             }
         }
 
-        // हर 5 सेकंड में तारीख चेक करें
+        // हर 5 सेकंड में चेक करें
         setInterval(checkAndUpdateDate, 5000);
 
         // ================= AUTHENTICATION =================
@@ -160,7 +165,7 @@
         let ownerEntries = [];
         let currentEditId = null;
 
-        // History Show/Hide Logic
+        // History Show/Hide Logic (शुरुआत में हमेशा बंद रहेगा)
         window.toggleHistory = function() {
             const container = document.getElementById("historyContainer");
             const btn = document.getElementById("toggleHistoryBtn");
@@ -179,11 +184,24 @@
                 const q = query(repairsCollection, orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
                 allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                applyFilters();
+                filterTodayData(); // लोड होते ही आज का डेटा दिखाएं
             } catch (e) {
                 console.error(e);
                 document.getElementById("records").innerHTML = "<p class='muted'>Data load error: " + e.message + "</p>";
             }
+        }
+
+        // सिर्फ आज की तारीख का डेटा दिखाने का फंक्शन
+        function filterTodayData() {
+            // फ़िल्टर तारीख को आज की तारीख पर सेट करें
+            document.getElementById("filterDate").value = currentDateStr;
+            
+            filteredEntries = allEntries.filter(x => x.date === currentDateStr);
+            render();
+            
+            // हिस्ट्री को बंद रखें
+            document.getElementById("historyContainer").style.display = "none";
+            document.getElementById("toggleHistoryBtn").textContent = "🔽 Show Repair History";
         }
 
         async function loadOwnerData() {
@@ -283,6 +301,7 @@
             document.getElementById("saveBtn").textContent = "Update Entry";
             window.scrollTo({ top: 0, behavior: "smooth" });
             
+            // एडिट करते समय हिस्ट्री खोल दें ताकि यूजर उसे देख सके
             document.getElementById("historyContainer").style.display = "block";
             document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
@@ -290,7 +309,7 @@
         window.resetForm = function() {
             currentEditId = null;
             ["customer", "phone", "model", "problem", "amount"].forEach(id => document.getElementById(id).value = "");
-            checkAndUpdateDate(); // रीसेट करते समय आज की तारीख डालें
+            checkAndUpdateDate(); // आज की तारीख डालें
             document.getElementById("payment").value = "Paid";
             document.getElementById("formTitle").textContent = "➕ New Repair Entry";
             document.getElementById("saveBtn").textContent = "💾 Save to Cloud";
@@ -300,7 +319,7 @@
         window.render = function() {
             const box = document.getElementById("records");
             if (!filteredEntries.length) { 
-                box.innerHTML = "<p class='muted'>Is date/serch ka koi record nahi mila.</p>"; 
+                box.innerHTML = "<p class='muted'>Is date ka koi record nahi mila.</p>"; 
                 document.getElementById("count").textContent = "0";
                 document.getElementById("total").textContent = "₹0";
                 return; 
@@ -373,6 +392,7 @@
 
             render();
             
+            // जब यूजर फ़िल्टर करे, तो हिस्ट्री खोल दें
             document.getElementById("historyContainer").style.display = "block";
             document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
