@@ -3,473 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Zero to Pro - SMC & Price Action Trading Academy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <title>Mobile Repair Register (Private)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #0b1120; color: #e2e8f0; overflow-x: hidden; min-height: 100vh; }
-        
-        /* ===== HEADER ===== */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #1e293b; }
-        .header .logo { font-size: 26px; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 10px; }
-        .header .logo span { color: #fff; }
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .badge { background: #1e293b; padding: 5px 12px; border-radius: 20px; font-size: 12px; border: 1px solid #334155; }
-        .reset-btn { background: #ef4444; border: none; color: white; padding: 5px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .reset-btn:hover { background: #dc2626; }
+        body { background: #f1f5f4; color: #222; padding: 14px; }
+        .container { max-width: 650px; margin: auto; }
 
-        /* ===== LANDING PAGE ===== */
-        #landingPage { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 20px; background: radial-gradient(circle at top, #1e293b 0%, #0b1120 70%); }
-        #landingPage h1 { font-size: 40px; font-weight: 900; margin-bottom: 10px; line-height: 1.2; }
-        #landingPage h1 .highlight { color: #fbbf24; }
-        #landingPage p { color: #94a3b8; font-size: 18px; max-width: 500px; margin-bottom: 40px; }
-        
-        .course-select-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 800px; }
-        .course-card { background: #1e293b; border-radius: 20px; padding: 30px; width: 100%; max-width: 350px; cursor: pointer; transition: 0.3s; border: 2px solid transparent; text-align: left; position: relative; overflow: hidden; }
-        .course-card:hover { transform: translateY(-5px); border-color: #fbbf24; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-        .course-card.smc { background: linear-gradient(135deg, #1e293b, #0f172a); border-left: 5px solid #3b82f6; }
-        .course-card.pa { background: linear-gradient(135deg, #1e293b, #0f172a); border-left: 5px solid #22c55e; }
-        .course-card .icon { font-size: 40px; margin-bottom: 15px; display: block; }
-        .course-card h3 { font-size: 24px; margin-bottom: 8px; color: #fff; }
-        .course-card p { color: #94a3b8; font-size: 14px; line-height: 1.5; }
-        .course-card .tag { position: absolute; top: 15px; right: 15px; background: #334155; padding: 4px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; color: #fbbf24; }
+        /* Header */
+        header { background: #087f5b; color: white; padding: 20px; border-radius: 14px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(8, 127, 91, 0.3); display: flex; justify-content: space-between; align-items: center; }
+        header h2 { margin: 0; font-size: 20px; }
+        header p { font-size: 12px; color: #d1fae5; margin-top: 4px; }
+        .logout-btn { background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 12px; }
 
-        /* ===== DASHBOARD ===== */
-        #dashboard { display: none; max-width: 700px; margin: 0 auto; padding: 20px; }
-        .welcome-section { padding: 20px 0; border-bottom: 1px solid #1e293b; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .welcome-section h2 { font-size: 28px; }
-        .welcome-section h2 span { color: #fbbf24; }
-        .welcome-section .sub { color: #94a3b8; font-size: 14px; margin-top: 5px; }
-        .welcome-section .streak-box { background: #1e293b; padding: 8px 16px; border-radius: 12px; border: 1px solid #334155; font-weight: 700; color: #fbbf24; }
-        
-        .course-progress { background: #1e293b; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #334155; }
-        .course-progress .title { font-weight: 700; margin-bottom: 5px; font-size: 20px; display: flex; align-items: center; gap: 10px; }
-        .course-progress .sub { font-size: 13px; color: #94a3b8; }
-        .progress-bar { background: #0f172a; height: 10px; border-radius: 10px; margin-top: 12px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f97316); width: 0%; border-radius: 10px; transition: width 0.5s ease; }
+        /* Login Screen */
+        #loginScreen { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 85vh; text-align: center; }
+        .login-box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        .login-box h2 { color: #087f5b; margin-bottom: 10px; font-size: 24px; }
+        .login-box p { color: #666; margin-bottom: 20px; font-size: 14px; }
+        .login-box input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 10px; font-size: 15px; background: #f9fafb; outline: none; }
+        .login-box button { width: 100%; background: #087f5b; color: white; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .login-box button:hover { background: #066649; }
 
-        /* ===== LESSON CARDS ===== */
-        .lesson-list { display: flex; flex-direction: column; gap: 14px; }
-        .lesson-card { background: #1e293b; border-radius: 14px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; border: 1px solid #1e293b; }
-        .lesson-card:hover { border-color: #334155; transform: translateX(3px); }
-        .lesson-card.locked { opacity: 0.5; cursor: not-allowed; }
-        .lesson-card.locked:hover { border-color: #1e293b; transform: none; }
-        .lesson-card.completed { border-left: 5px solid #22c55e; background: #162a1e; }
-        .lesson-card .info h4 { font-size: 16px; margin-bottom: 2px; }
-        .lesson-card .info p { font-size: 12px; color: #94a3b8; }
-        .lesson-card .status { font-size: 24px; }
-        .lesson-card .level-badge { background: #0f172a; padding: 2px 10px; border-radius: 10px; font-size: 10px; color: #94a3b8; margin-right: 10px; }
+        /* Main App */
+        #appScreen { display: none; }
 
-        /* ===== CONTENT / QUIZ VIEW ===== */
-        #contentView { display: none; max-width: 700px; margin: 0 auto; padding: 20px; }
-        .back-btn { background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; transition: 0.2s; }
-        .back-btn:hover { color: #fff; }
-        
-        .lesson-content-box { background: #1e293b; border-radius: 16px; padding: 30px; margin-bottom: 20px; border: 1px solid #334155; }
-        .lesson-content-box h3 { color: #fbbf24; font-size: 24px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .lesson-content-box p { line-height: 1.8; color: #e2e8f0; font-size: 16px; }
-        .lesson-content-box .highlight { background: #0f172a; padding: 15px; border-radius: 8px; border-left: 4px solid #fbbf24; margin: 20px 0; font-family: monospace; color: #fbbf24; }
-        .lesson-content-box .real-example { background: #162a1e; border: 1px solid #22c55e; padding: 15px; border-radius: 8px; margin: 15px 0; color: #86efac; }
+        /* Cards */
+        .card { background: white; padding: 16px; border-radius: 13px; margin-bottom: 14px; box-shadow: 0 2px 9px rgba(0,0,0,0.05); }
+        h3 { margin-top: 0; color: #087f5b; font-size: 16px; margin-bottom: 15px; }
 
-        .test-btn { width: 100%; background: #3b82f6; color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
-        .test-btn:hover { background: #2563eb; }
-        .test-btn:disabled { background: #334155; cursor: not-allowed; }
+        /* Forms */
+        label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 5px; color: #475569; }
+        input, textarea, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; outline: none; }
+        input:focus, textarea:focus, select:focus { border-color: #087f5b; background: #fff; }
+        textarea { min-height: 65px; resize: vertical; }
+        button { border: 0; padding: 12px; border-radius: 8px; background: #087f5b; color: white; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.2s; width: 100%; }
+        button:hover { background: #066649; }
+        button.secondary { background: #455a64; }
+        button.danger { background: #c62828; }
+        button.small { padding: 7px 10px; font-size: 12px; margin: 3px; width: auto; }
 
-        .quiz-area { display: none; margin-top: 20px; background: #1e293b; padding: 25px; border-radius: 16px; border: 1px solid #334155; }
-        .quiz-area h4 { font-size: 18px; margin-bottom: 15px; color: #fbbf24; }
-        .quiz-options { display: flex; flex-direction: column; gap: 12px; margin: 15px 0; }
-        .quiz-opt { background: #0f172a; border: 1px solid #334155; padding: 16px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 15px; }
-        .quiz-opt:hover { border-color: #3b82f6; background: #1e293b; }
-        .quiz-opt.correct { background: #22c55e; border-color: #22c55e; color: white; font-weight: 600; }
-        .quiz-opt.wrong { background: #ef4444; border-color: #ef4444; color: white; font-weight: 600; }
-        .quiz-opt.disabled { pointer-events: none; opacity: 0.6; }
-        
-        .next-q-btn { width: 100%; background: #fbbf24; color: #0b1120; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; display: none; margin-top: 10px; }
-        .next-q-btn:hover { background: #f59e0b; }
+        /* Search & Filter */
+        .filter-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .filter-row input { flex: 1; }
+        .search-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; margin-bottom: 10px; }
 
-        /* ===== TOAST ===== */
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 14px 28px; border-radius: 30px; border: 1px solid #fbbf24; display: none; z-index: 300; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-weight: 600; text-align: center; max-width: 90%; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 600px) {
-            #landingPage h1 { font-size: 30px; }
-            .course-card { max-width: 100%; }
-            .welcome-section { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .header .logo { font-size: 20px; }
-        }
+        /* Totals & Entries */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .total { background: #e0f2eb; padding: 16px; border-radius: 10px; text-align: center; }
+        .total strong { font-size: 25px; color: #087f5b; display: block; margin-top: 5px; }
+        .owner-total { background: #e3f2fd; padding: 16px; border-radius: 10px; text-align: center; border: 1px solid #90caf9; }
+        .owner-total strong { font-size: 25px; color: #1565c0; display: block; margin-top: 5px; }
+        .entry { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; background: #fff; }
+        .entry p { margin: 6px 0; font-size: 14px; color: #334155; }
+        .actions { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+        .muted { color: #64748b; font-size: 13px; }
+        .status-paid { color: #22c55e; font-weight: 700; }
+        .status-pending { color: #ef4444; font-weight: 700; }
+        .owner-entry { border: 1px solid #e2e8f0; border-left: 4px solid #1565c0; border-radius: 10px; padding: 12px; margin-top: 10px; background: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .owner-entry p { margin: 0; font-size: 14px; }
+        .owner-entry .amount { font-weight: 800; color: #1565c0; font-size: 16px; }
+        #loader, #ownerLoader { display: none; text-align: center; padding: 15px; font-weight: 600; color: #087f5b; }
     </style>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, limit, startAfter, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // 🔴 आपकी Firebase Configuration 🔴
+        const firebaseConfig = {
+            apiKey: "AIzaSyDS--FcIklOPuekaVU6GoI_oYAwBBHYhqk",
+            authDomain: "mobile-repairing-details-971.firebaseapp.com",
+            projectId: "mobile-repairing-details-971",
+            storageBucket: "mobile-repairing-details-971.firebasestorage.app",
+            messagingSenderId: "757152848434",
+            appId: "1:757152848434:web:6dcec6f801cc4a10033a2b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const repairsCollection = collection(db, "repairs");
+        const ownerPaymentsCollection = collection(db, "ownerPayments");
+
+        // ================= AUTHENTICATION =================
+        window.login = async function() {
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+            
+            if(!email || !password) return alert("Email aur Password dono bharein!");
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                alert("❌ Login Failed: " + error.message);
+            }
+        };
+
+        window.logout = async function() {
+            if(confirm("Kya aap logout karna chahte hain?")) {
+                await signOut(auth);
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("appScreen").style.display = "block";
+                document.getElementById("userEmail").textContent = user.email;
+                loadData(false);
+                loadOwnerData();
+            } else {
+                document.getElementById("loginScreen").style.display = "flex";
+                document.getElementById("appScreen").style.display = "none";
+            }
+        });
+
+        // ================= DATA LOGIC =================
+        let entries = [];
+        let ownerEntries = [];
+        let currentEditId = null;
+        let lastVisibleDoc = null;
+        let isFetching = false;
+        let hasMoreData = true;
+        const BATCH_SIZE = 20;
+
+        async function loadData(loadMore = false) {
+            if (isFetching || (!loadMore && !hasMoreData)) return;
+            isFetching = true;
+            if (!loadMore) {
+                entries = []; lastVisibleDoc = null; hasMoreData = true;
+                document.getElementById("records").innerHTML = "<p class='muted'>Loading data...</p>";
+            } else { document.getElementById("loader").style.display = "block"; }
+
+            try {
+                let q;
+                const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+                const filterDate = document.getElementById("filterDate").value;
+
+                if (filterDate) {
+                    q = query(repairsCollection, where("date", "==", filterDate), orderBy("createdAt", "desc"), limit(BATCH_SIZE));
+                } else if (searchTerm) {
+                    q = query(repairsCollection, orderBy("createdAt", "desc"), limit(100));
+                } else {
+                    q = query(repairsCollection, orderBy("createdAt", "desc"), limit(BATCH_SIZE));
+                }
+
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) { hasMoreData = false; } 
+                else {
+                    let newEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    if (searchTerm) {
+                        newEntries = newEntries.filter(x => 
+                            x.customer.toLowerCase().includes(searchTerm) || 
+                            x.model.toLowerCase().includes(searchTerm) || 
+                            x.problem.toLowerCase().includes(searchTerm)
+                        );
+                    }
+                    entries = loadMore ? [...entries, ...newEntries] : newEntries;
+                    lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+                }
+                render();
+            } catch (e) {
+                console.error(e);
+                document.getElementById("records").innerHTML = "<p class='muted'>Data load error: " + e.message + "</p>";
+            } finally {
+                isFetching = false;
+                document.getElementById("loader").style.display = "none";
+            }
+        }
+
+        async function loadOwnerData() {
+            document.getElementById("ownerLoader").style.display = "block";
+            try {
+                const q = query(ownerPaymentsCollection, orderBy("date", "desc"));
+                const snapshot = await getDocs(q);
+                ownerEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderOwnerData();
+            } catch (e) {
+                console.error("Error loading owner data:", e);
+                document.getElementById("ownerRecords").innerHTML = "<p class='muted'>Data load error.</p>";
+            } finally {
+                document.getElementById("ownerLoader").style.display = "none";
+            }
+        }
+
+        // ================= SAVE & EDIT =================
+        window.saveEntry = async function() {
+            const customer = document.getElementById("customer").value.trim();
+            const model = document.getElementById("model").value.trim();
+            const date = document.getElementById("date").value;
+            const amount = Number(document.getElementById("amount").value);
+
+            if (!date || !customer || !model) return alert("Date, Customer Name aur Model zaroor bharein.");
+            if (!Number.isFinite(amount) || amount < 0) return alert("Sahi amount enter karein.");
+
+            const data = {
+                date, customer, model, amount,
+                phone: document.getElementById("phone").value.trim(),
+                problem: document.getElementById("problem").value.trim(),
+                payment: document.getElementById("payment").value,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                if (currentEditId) {
+                    await updateDoc(doc(db, "repairs", currentEditId), data);
+                    alert("✅ Entry Updated!");
+                } else {
+                    await addDoc(repairsCollection, data);
+                    alert("✅ Entry Saved!");
+                }
+                resetForm();
+                loadData(false);
+            } catch (e) {
+                alert("Error saving: " + e.message);
+            }
+        };
+
+        window.saveOwnerPayment = async function() {
+            const amount = Number(document.getElementById("ownerAmount").value);
+            const date = document.getElementById("ownerDate").value;
+            const note = document.getElementById("ownerNote").value.trim();
+
+            if (!date || !Number.isFinite(amount) || amount <= 0) return alert("Sahi Date aur Amount enter karein.");
+
+            try {
+                await addDoc(ownerPaymentsCollection, { amount, date, note, createdAt: new Date().toISOString() });
+                alert("✅ Payment Saved!");
+                document.getElementById("ownerAmount").value = "";
+                document.getElementById("ownerNote").value = "";
+                loadOwnerData();
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        };
+
+        window.deleteEntry = async function(id) {
+            if (!confirm("Delete this record?")) return;
+            try {
+                await deleteDoc(doc(db, "repairs", id));
+                loadData(false);
+            } catch (e) { alert(e.message); }
+        };
+
+        window.deleteOwnerPayment = async function(id) {
+            if (!confirm("Delete this payment?")) return;
+            try {
+                await deleteDoc(doc(db, "ownerPayments", id));
+                loadOwnerData();
+            } catch (e) { alert(e.message); }
+        };
+
+        window.editEntry = function(id) {
+            const x = entries.find(e => e.id === id);
+            if (!x) return;
+            currentEditId = x.id;
+            document.getElementById("date").value = x.date;
+            document.getElementById("customer").value = x.customer;
+            document.getElementById("phone").value = x.phone || "";
+            document.getElementById("model").value = x.model;
+            document.getElementById("problem").value = x.problem;
+            document.getElementById("amount").value = x.amount;
+            document.getElementById("payment").value = x.payment;
+            document.getElementById("formTitle").textContent = "✏️ Edit Entry";
+            document.getElementById("saveBtn").textContent = "Update Entry";
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        window.resetForm = function() {
+            currentEditId = null;
+            ["customer", "phone", "model", "problem", "amount"].forEach(id => document.getElementById(id).value = "");
+            document.getElementById("date").value = new Date().toISOString().slice(0, 10);
+            document.getElementById("payment").value = "Paid";
+            document.getElementById("formTitle").textContent = "➕ New Repair Entry";
+            document.getElementById("saveBtn").textContent = "💾 Save to Cloud";
+        };
+
+        // ================= RENDER =================
+        window.render = function() {
+            const box = document.getElementById("records");
+            if (!entries.length) { box.innerHTML = "<p class='muted'>Koi record nahi mila.</p>"; return; }
+            box.innerHTML = entries.map(x => `
+                <div class="entry">
+                    <p><b>${escapeHTML(x.date)}</b></p>
+                    <p>👤 ${escapeHTML(x.customer)}</p>
+                    <p>📞 ${escapeHTML(x.phone || "-")}</p>
+                    <p>📱 ${escapeHTML(x.model)}</p>
+                    <p>🔧 ${escapeHTML(x.problem || "-")}</p>
+                    <p>💰 <b>₹${Number(x.amount).toLocaleString("en-IN")}</b></p>
+                    <p>💳 <span class="${x.payment === 'Paid' ? 'status-paid' : 'status-pending'}">${escapeHTML(x.payment)}</span></p>
+                    <div class="actions">
+                        <button class="small" onclick="editEntry('${x.id}')">Edit</button>
+                        <button class="small danger" onclick="deleteEntry('${x.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join("");
+            const sum = entries.reduce((s, x) => s + Number(x.amount || 0), 0);
+            document.getElementById("count").textContent = entries.length;
+            document.getElementById("total").textContent = "₹" + sum.toLocaleString("en-IN");
+        };
+
+        window.renderOwnerData = function() {
+            const box = document.getElementById("ownerRecords");
+            const totalEl = document.getElementById("ownerTotalAmount");
+            if (!ownerEntries.length) {
+                box.innerHTML = "<p class='muted'>Abhi tak koi payment nahi.</p>";
+                totalEl.textContent = "₹0"; return;
+            }
+            let total = 0;
+            box.innerHTML = ownerEntries.map(x => {
+                total += Number(x.amount);
+                return `
+                    <div class="owner-entry">
+                        <div>
+                            <p><b>${escapeHTML(x.date)}</b></p>
+                            <p style="font-size:12px; color:#666;">${escapeHTML(x.note || "No note")}</p>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span class="amount">₹${Number(x.amount).toLocaleString("en-IN")}</span>
+                            <button class="small danger" onclick="deleteOwnerPayment('${x.id}')" style="margin:0;">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+            totalEl.textContent = "₹" + total.toLocaleString("en-IN");
+        };
+
+        window.escapeHTML = function(s) {
+            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        };
+
+        window.applyFilters = function() { loadData(false); };
+        window.clearFilters = function() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("filterDate").value = "";
+            loadData(false);
+        };
+
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+                if(!isFetching && hasMoreData && !document.getElementById("filterDate").value) {
+                    loadData(true);
+                }
+            }
+        });
+
+        // Init Dates
+        document.getElementById("date").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("ownerDate").value = new Date().toISOString().slice(0, 10);
+    </script>
 </head>
 <body>
 
-    <!-- ===== HEADER ===== -->
-    <header class="header">
-        <div class="logo">📈 <span>Trade</span>Pro</div>
-        <div class="header-right">
-            <span class="badge">🔥 <span id="streakCount">0</span> दिन की लगातार पढ़ाई</span>
-            <button class="reset-btn" onclick="resetAllProgress()">🔄 सब रीसेट करें</button>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+    <div class="login-box">
+        <h2>🔒 Private Access</h2>
+        <p>Please login to access your register.</p>
+        <input type="email" id="loginEmail" placeholder="Email Address">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appScreen" class="container">
+    <header>
+        <div>
+            <h2>📱 Repair Register</h2>
+            <p>Logged in: <span id="userEmail"></span></p>
         </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </header>
 
-    <!-- ===== LANDING PAGE ===== -->
-    <div id="landingPage">
-        <h1>बाजार में <span class="highlight">Zero से Pro</span> बनें।</h1>
-        <p>अपना रास्ता चुनें। SMC या Price Action को Step-by-Step सीखें। टेस्ट पास करें और अगला Level खोलें।</p>
-        <div class="course-select-container">
-            <div class="course-card smc" onclick="selectCourse('smc')">
-                <span class="icon">🧠</span>
-                <h3>Smart Money Concepts (SMC)</h3>
-                <p>संस्थागत ट्रेडर्स बाजार को कैसे चलाते हैं, यह सीखें। Order Blocks, Liquidity, FVG और Market Structure.</p>
-                <span class="tag">SMC</span>
-            </div>
-            <div class="course-card pa" onclick="selectCourse('pa')">
-                <span class="icon">📊</span>
-                <h3>Price Action</h3>
-                <p>बिना इंडिकेटर के चार्ट पढ़ने की कला में महारत हासिल करें। Support & Resistance, Patterns और Entries.</p>
-                <span class="tag">Price Action</span>
-            </div>
-        </div>
-        <p style="margin-top: 30px; font-size: 12px; color: #475569;">लॉगिन की ज़रूरत नहीं। आपकी प्रोग्रेस आपके ब्राउज़र में सेव होती है।</p>
+    <!-- Repair Form -->
+    <div class="card">
+        <h3 id="formTitle">➕ New Repair Entry</h3>
+        <label>Date</label><input type="date" id="date">
+        <label>Customer Name</label><input id="customer" placeholder="Customer ka naam">
+        <label>Mobile Number</label><input id="phone" type="tel" placeholder="Customer mobile number">
+        <label>Mobile Model</label><input id="model" placeholder="Jaise: Redmi Note 12">
+        <label>Problem / Repair Work</label><textarea id="problem" placeholder="Kya problem hai?"></textarea>
+        <label>Repair Amount (₹)</label><input id="amount" type="number" min="0" placeholder="Amount">
+        <label>Payment Status</label>
+        <select id="payment"><option value="Paid">Paid</option><option value="Pending">Pending</option></select>
+        <button onclick="saveEntry()" id="saveBtn">💾 Save to Cloud</button>
+        <button class="secondary" onclick="resetForm()">Clear Form</button>
     </div>
 
-    <!-- ===== DASHBOARD ===== -->
-    <div id="dashboard">
-        <div class="welcome-section">
-            <div>
-                <h2><span id="courseTitleDisplay">SMC</span> में आपका स्वागत है</h2>
-                <div class="sub" id="courseSubDisplay">Level 0 / 15 पूरे हुए</div>
-            </div>
-            <div class="streak-box">🔥 <span id="streakCountDash">0</span> दिन</div>
-        </div>
-
-        <div class="course-progress">
-            <div class="title"><span id="courseIcon">🧠</span> <span id="courseNameDisplay">Smart Money Concepts</span></div>
-            <div class="sub" id="progressText">0 / 15 Lessons</div>
-            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-        </div>
-
-        <div class="lesson-list" id="lessonList"></div>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <button onclick="goHome()" style="background: #475569; border: none; padding: 10px 25px; border-radius: 25px; color: white; cursor: pointer; font-weight: 600;">⬅ कोर्स बदलें</button>
+    <!-- Search & Filter -->
+    <div class="card">
+        <h3>🔍 Search / Filter</h3>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by Model, Problem, or Customer...">
+        <label>Filter by Date</label>
+        <div class="filter-row">
+            <input type="date" id="filterDate">
+            <button class="small" onclick="applyFilters()">Filter</button>
+            <button class="small secondary" onclick="clearFilters()">Clear</button>
         </div>
     </div>
 
-    <!-- ===== CONTENT / TEST VIEW ===== -->
-    <div id="contentView">
-        <button class="back-btn" onclick="goBackToDashboard()">← डैशबोर्ड पर वापस जाएं</button>
-        
-        <div class="lesson-content-box" id="lessonContent">
-            <h3 id="lessonTitle">Lesson Title</h3>
-            <div id="lessonBody">Content लोड हो रहा है...</div>
-        </div>
-
-        <button class="test-btn" id="startTestBtn" onclick="startTest()">📝 Level Test दें</button>
-
-        <div class="quiz-area" id="quizArea">
-            <h4 id="questionText">प्रश्न 1 of 5</h4>
-            <div class="quiz-options" id="optionsContainer"></div>
-            <button class="next-q-btn" id="nextQBtn" onclick="nextQuestion()">अगला प्रश्न →</button>
+    <!-- Records Summary -->
+    <div class="card">
+        <h3>📊 Daily Income</h3>
+        <div class="grid">
+            <div class="total"><div>Records Shown</div><strong id="count">0</strong></div>
+            <div class="total"><div>Total Amount</div><strong id="total">₹0</strong></div>
         </div>
     </div>
 
-    <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast"></div>
+    <!-- Repair History -->
+    <div class="card">
+        <h3>📋 Repair History</h3>
+        <div id="records"><p class="muted">Loading from cloud...</p></div>
+        <div id="loader">⏳ Loading more...</div>
+    </div>
 
-    <script>
-        // ================= 15 LEVELS (ZERO TO PRO) - HINDI =================
-        const courseData = {
-            smc: {
-                name: "Smart Money Concepts (SMC)",
-                icon: "🧠",
-                levels: [
-                    { id: 1, title: "Level 1: SMC क्या है? (बेसिक)", content: "<b>Smart Money Concepts (SMC)</b> का मतलब है कि बड़े संस्थान (बैंक, हेज फंड) बाजार को कैसे कंट्रोल करते हैं।<br><br>🔹 <b>Retail Traders</b> प्राइस के पीछे भागते हैं।<br>🔹 <b>Smart Money</b> खुद प्राइस बनाता है।<br><br>📌 <b>मुख्य नियम:</b> हमेशा Smart Money के पैरों के निशान ढूँढ़ें। वे <b>Order Blocks</b> और <b>Liquidity</b> के रूप में सुराग छोड़ते हैं।" },
-                    { id: 2, title: "Level 2: मार्केट स्ट्रक्चर (Market Structure)", content: "<b>Market Structure</b> SMC की नींव है। यह ट्रेंड बताता है।<br><br>🔹 <b>Uptrend:</b> Higher Highs (HH) और Higher Lows (HL)।<br>🔹 <b>Downtrend:</b> Lower Highs (LH) और Lower Lows (LL)।<br>🔹 <b>Range:</b> Equal Highs और Equal Lows।<br><br>💡 <b>Pro Tip:</b> हमेशा पहले 1-घंटे या 4-घंटे के टाइमफ्रेम पर स्ट्रक्चर पहचानें।" },
-                    { id: 3, title: "Level 3: ऑर्डर ब्लॉक (Order Blocks) - SMC का दिल", content: "एक <b>Order Block (OB)</b> वह आखिरी Bearish या Bullish कैंडल होती है जिसके बाद प्राइस में बड़ा मूव आता है।<br><br>🔹 <b>Bullish OB:</b> प्राइस ऊपर जाने से पहले आखिरी लाल कैंडल।<br>🔹 <b>Bearish OB:</b> प्राइस नीचे जाने से पहले आखिरी हरी कैंडल।<br><br>⚡ <b>Strategy:</b> प्राइस अक्सर OB पर वापस आकर उसे Test करता है।" },
-                    { id: 4, title: "Level 4: लिक्विडिटी और स्टॉप हंट (Stop Hunts)", content: "<b>Liquidity</b> का मतलब है Retail Traders के Stop Losses का पूल।<br><br>💡 <b>Smart Money कैसे काम करता है:</b> वे प्राइस को Highs या Lows पर ले जाकर Retail के Stop Losses को ट्रिगर करते हैं। इसे <b>Stop Hunt</b> कहते हैं।<br><br>🚨 <b>नियम:</b> High या Low पर कभी एंट्री न लें। Sweep और Reversal का इंतज़ार करें।" },
-                    { id: 5, title: "Level 5: फेयर वैल्यू गैप (FVG)", content: "एक <b>FVG</b> 3 कैंडल का पैटर्न है जहाँ पहली और तीसरी कैंडल ओवरलैप नहीं करतीं।<br><br>📊 यह प्राइस एफिशिएंसी में एक <b>gap</b> को दर्शाता है, जहाँ प्राइस बहुत तेज़ी से मूव किया।<br><br>🎯 <b>FVG को कैसे ट्रेड करें:</b> Order Block के <b>अंदर</b> FVG ढूँढ़ें। यह हाई-प्रोबेबिलिटी एंट्री ज़ोन है।" },
-                    { id: 6, title: "Level 6: ब्रेक ऑफ स्ट्रक्चर (BOS)", content: "एक <b>BOS</b> तब होता है जब प्राइस पिछले Swing High (Uptrend में) या Swing Low (Downtrend में) को तोड़ता है।<br><br>🔹 यह कन्फर्म करता है कि ट्रेंड जारी है।<br><br>🔥 <b>Pro Strategy:</b> BOS लेवल के <b>रिटेस्ट (Retest)</b> पर एंट्री लें। ब्रेकआउट पर कभी न लें।" },
-                    { id: 7, title: "Level 7: मार्केट स्ट्रक्चर शिफ्ट (MSS / CHoCH)", content: "एक <b>MSS</b> (या Change of Character - CHoCH) तब होता है जब प्राइस आखिरी HL (Uptrend में) या LH (Downtrend में) को तोड़ता है।<br><br>⚠️ यह संकेत है कि ट्रेंड रिवर्स हो सकता है।<br><br>✅ <b>Action:</b> MSS का इंतज़ार करें, फिर नई दिशा में एंट्री के लिए <b>Pullback</b> देखें।" },
-                    { id: 8, title: "Level 8: SMC एंट्री मॉडल (SMC Entry Models)", content: "SMC में 3 मुख्य एंट्री मॉडल हैं:<br><br>🔹 <b>Model 1:</b> Order Block + FVG.<br>🔹 <b>Model 2:</b> Liquidity Sweep + MSS.<br>🔹 <b>Model 3:</b> Break of Structure + Retest.<br><br>📌 <b>Golden Rule:</b> हमेशा प्राइस के आपके ज़ोन में आने का इंतज़ार करें। बाजार के पीछे न भागें।" },
-                    { id: 9, title: "Level 9: रिस्क मैनेजमेंट (SMC Risk Management)", content: "Professional Traders कभी भी एक ट्रेड पर अपनी पूंजी का <b>1% से 2%</b> से ज्यादा रिस्क नहीं लेते।<br><br>🔹 <b>Stop Loss:</b> हमेशा Order Block या Swing Low/High से थोड़ा बाहर रखें।<br>🔹 <b>Take Profit:</b> <b>1:2</b> या <b>1:3</b> Risk-Reward Ratio का लक्ष्य रखें।<br><br>🧠 <b>Mindset:</b> नुकसान खेल का हिस्सा हैं। उन्हें मैनेज करें, डरें नहीं।" },
-                    { id: 10, title: "Level 10: SMC में टाइमफ्रेम का महत्व", content: "SMC में <b>3 Timeframes</b> का इस्तेमाल करना सबसे ज़रूरी है:<br><br>🔹 <b>Higher TF (4H/Daily):</b> मुख्य ट्रेंड और OB देखें।<br>🔹 <b>Medium TF (1H):</b> एंट्री ज़ोन ढूँढ़ें।<br>🔹 <b>Lower TF (15m):</b> MSS और FVG कन्फर्म करें।<br><br>⚡ <b>Rule:</b> HTF का ट्रेंड ही किंग है। LTF का इस्तेमाल सिर्फ टाइमिंग के लिए करें।" },
-                    { id: 11, title: "Level 11: SMC में बायसेड (Biased) कैसे बनें?", content: "SMC में <b>Biased</b> होने का मतलब है कि आपको पहले से पता हो कि प्राइस किधर जाएगा।<br><br>🔹 <b>Step 1:</b> HTF पर ट्रेंड पहचानें (Bullish/Bearish)।<br>🔹 <b>Step 2:</b> Liquidity Sweep की जगह ढूँढ़ें (जहाँ स्टॉप हंट होगा)।<br>🔹 <b>Step 3:</b> Order Block और FVG का ज़ोन मार्क करें।<br><br>💡 <b>Pro Tip:</b> प्राइस को चार्ट पर आने दें। अगर आपका बायस सही है, तो प्राइस आपके ज़ोन में आएगा।" },
-                    { id: 12, title: "Level 12: SMC में मल्टी-टाइमफ्रेम एंट्री (Multi-Timeframe Entry)", content: "SMC में एंट्री का सबसे प्रोफेशनल तरीका:<br><br>🔹 <b>1. HTF (4H) पर OB को मार्क करें।</b><br>🔹 <b>2. LTF (15m) पर जाएं और MSS (CHoCH) का इंतज़ार करें।</b><br>🔹 <b>3. जब प्राइस HTF OB के अंदर आए, तो LTF पर FVG देखें और एंट्री लें।</b><br><br>✅ यह तरीका आपको 90% सटीकता देता है।" },
-                    { id: 13, title: "Level 13: SMC में पेशेंस (Patience) और डिसिप्लिन", content: "SMC में <b>Patience</b> सबसे बड़ा हथियार है।<br><br>🔹 <b>सही ज़ोन:</b> जब तक प्राइस आपके Order Block या FVG पर न आ जाए, तब तक इंतज़ार करें।<br>🔹 <b>गलती:</b> 90% Traders ट्रेड में जल्दी एंट्री लेकर अपनी पूंजी खो देते हैं।<br><br>🔥 <b>Pro Rule:</b> एक दिन में 1-2 से ज्यादा ट्रेड न लें। गुणवत्ता > मात्रा।" },
-                    { id: 14, title: "Level 14: SMC में एग्ज़िक्यूशन (Execution) की कला", content: "SMC में एग्ज़िक्यूशन का मतलब है कि आपने अपनी एंट्री कितनी सटीकता से ली।<br><br>🔹 <b>Limit Order:</b> अपने OB या FVG पर Limit Order लगाएं। Market Order से बचें।<br>🔹 <b>Stop Loss:</b> SL को हमेशा Swing Low/High से 5-10 pips बाहर रखें ताकि विक (Wick) आपको न उड़ाए।<br>🔹 <b>Risk-Reward:</b> 1:3 से कम RR पर कभी एंट्री न लें।<br><br>📌 <b>Rule:</b> अगर एंट्री का ज़ोन टूट गया, तो ट्रेड कैंसल करें।" },
-                    { id: 15, title: "Level 15: द प्रोफेशनल SMC फ्रेमवर्क (The Ultimate SMC Framework)", content: "यह SMC का पूरा प्रोफेशनल फ्रेमवर्क है। इसे रोज़ाना इस्तेमाल करें:<br><br>1️⃣ <b>HTF Structure</b> पहचानें (HH/HL या LH/LL)।<br>2️⃣ <b>Liquidity Sweep</b> की जगह ढूँढ़ें (जहाँ SL हंट होगा)।<br>3️⃣ <b>Order Block (OB)</b> और <b>FVG</b> को मार्क करें।<br>4️⃣ <b>LTF पर MSS (CHoCH)</b> का इंतज़ार करें।<br>5️⃣ <b>OB के अंदर FVG पर Limit Order</b> लगाएं।<br>6️⃣ <b>SL</b> को OB के बाहर रखें और <b>TP</b> को 1:3 RR पर सेट करें।<br><br>🎓 <b>बधाई हो!</b> आप अब एक Professional SMC Trader हैं। चार्ट देखते ही आपको पता चल जाएगा कि कहाँ एंट्री लेनी है और कहाँ बाहर निकलना है।" }
-                ],
-                questions: {
-                    1: [{ q: "SMC का पूरा नाम क्या है?", a: "Standard Market Concepts", b: "Smart Money Concepts", c: "Simple Moving Crossover", d: "Strategic Market Control", ans: "B" }],
-                    2: [{ q: "Uptrend में प्राइस क्या बनाता है?", a: "Lower Highs, Lower Lows", b: "Higher Highs, Higher Lows", c: "Equal Highs, Equal Lows", d: "Random Highs and Lows", ans: "B" }],
-                    3: [{ q: "Bullish Order Block क्या होता है?", a: "प्राइस ऊपर जाने से पहले आखिरी लाल कैंडल", b: "प्राइस ऊपर जाने से पहले आखिरी हरी कैंडल", c: "एक Doji कैंडल", d: "एक गैप", ans: "A" }],
-                    4: [{ q: "Smart Money मूव करने से पहले क्या हंट करता है?", a: "Liquidity (Stop Losses)", b: "Retail profits", c: "न्यूज़", d: "Volume", ans: "A" }],
-                    5: [{ q: "FVG में कितनी कैंडल्स होती हैं?", a: "1", b: "2", c: "3", d: "4", ans: "C" }],
-                    6: [{ q: "SMC में BOS का क्या मतलब है?", a: "Break of Structure", b: "Buy on Strength", c: "Best Order Size", d: "Balance of Supply", ans: "A" }],
-                    7: [{ q: "MSS क्या दर्शाता है?", a: "ट्रेंड का जारी रहना", b: "ट्रेंड का संभावित रिवर्सल", c: "हाई वॉल्यूम", d: "लो वोलैटिलिटी", ans: "B" }],
-                    8: [{ q: "SMC एंट्री का Golden Rule क्या है?", a: "प्राइस के पीछे भागो", b: "प्राइस के आपके ज़ोन में आने का इंतज़ार करो", c: "ब्रेकआउट पर एंट्री लो", d: "टॉप पर एंट्री लो", ans: "B" }],
-                    9: [{ q: "एक Professional ट्रेडर एक ट्रेड पर कितना रिस्क लेता है?", a: "10%", b: "25%", c: "1-2%", d: "50%", ans: "C" }],
-                    10: [{ q: "SMC में Biased होने का पहला कदम क्या है?", a: "LTF पर एंट्री लेना", b: "HTF पर ट्रेंड पहचानना", c: "न्यूज़ चेक करना", d: "TP सेट करना", ans: "B" }],
-                    11: [{ q: "SMC में Multi-Timeframe Entry के लिए कौन सा कदम सबसे ज़रूरी है?", a: "LTF पर FVG देखना", b: "HTF पर OB मार्क करना", c: "MSS का इंतज़ार करना", d: "सबकुछ", ans: "B" }],
-                    12: [{ q: "SMC में सबसे बड़ा हथियार क्या है?", a: "इंडिकेटर", b: "Patience (इंतज़ार)", c: "फास्ट एंट्री", d: "हाई लीवरेज", ans: "B" }],
-                    13: [{ q: "SMC में Limit Order का इस्तेमाल क्यों करना चाहिए?", a: "बेहतर स्लिपेज के लिए", b: "सटीकता के लिए", c: "नुकसान बचाने के लिए", d: "सबकुछ", ans: "D" }],
-                    14: [{ q: "SMC में Risk-Reward Ratio कितना होना चाहिए?", a: "1:1", b: "1:2 या 1:3", c: "2:1", d: "3:1", ans: "B" }],
-                    15: [{ q: "SMC Professional Framework में पहला कदम क्या है?", a: "TP सेट करना", b: "HTF Structure पहचानना", c: "एंट्री लेना", d: "न्यूज़ चेक करना", ans: "B" }]
-                }
-            },
-            pa: {
-                name: "Price Action",
-                icon: "📊",
-                levels: [
-                    { id: 1, title: "Level 1: Price Action क्या है? (बेसिक)", content: "<b>Price Action</b> बिना किसी lagging इंडिकेटर (जैसे RSI, MACD) के चार्ट को पढ़ने की कला है।<br><br>🔹 <b>मुख्य विश्वास:</b> सारी जानकारी प्राइस में ही पहले से मौजूद है।<br><br>📈 <b>नियम:</b> प्राइस ऐतिहासिक लेवल्स को रेस्पेक्ट करता है। चार्ट आपको सब कुछ बताता है।" },
-                    { id: 2, title: "Level 2: सपोर्ट और रेसिस्टेंस (Support & Resistance)", content: "<b>Support</b> वह लेवल है जहाँ से प्राइस ऊपर की ओर बाउंस करता है। <b>Resistance</b> वह लेवल है जहाँ से प्राइस नीचे की ओर रिवर्स करता है।<br><br>🔹 <b>Role Reversal:</b> टूटने के बाद Support Resistance बन जाता है (और उल्टा)।<br><br>📌 <b>Pro Tip:</b> किसी लेवल को जितनी बार Test किया जाए, वह उतना ही मजबूत होता है।" },
-                    { id: 3, title: "Level 3: कैंडलस्टिक पैटर्न (Candlestick Patterns)", content: "कैंडलस्टिक्स खरीदारों और विक्रेताओं की कहानी बताती हैं।<br><br>🔹 <b>Bullish Patterns:</b> Hammer, Morning Star, Bullish Engulfing.<br>🔹 <b>Bearish Patterns:</b> Shooting Star, Evening Star, Bearish Engulfing.<br><br>⚠️ <b>सावधानी:</b> हमेशा अगली कैंडल से पैटर्न को कन्फर्म करें। एक कैंडल काफी नहीं है।" },
-                    { id: 4, title: "Level 4: ट्रेंडलाइन और चैनल (Trendlines & Channels)", content: "एक <b>Trendline</b> दो या अधिक Swing पॉइंट्स को जोड़ती है।<br><br>🔹 <b>Uptrend:</b> Higher Lows (HLs) को जोड़ें।<br>🔹 <b>Downtrend:</b> Lower Highs (LHs) को जोड़ें।<br><br>⚡ <b>Strategy:</b> प्राइस अक्सर Trendline को रेस्पेक्ट करता है। Trendline को टच करने और बाउंस करने का इंतज़ार करें।" },
-                    { id: 5, title: "Level 5: चार्ट पैटर्न (Chart Patterns)", content: "चार्ट पैटर्न ऐसी आकृतियाँ हैं जो Continuation या Reversal का संकेत देती हैं।<br><br>🔹 <b>Continuation:</b> Triangles, Flags, Pennants.<br>🔹 <b>Reversal:</b> Head and Shoulders, Double Top/Bottom, Wedges.<br><br>🎯 <b>Entry:</b> पैटर्न की Neckline या Trendline के ब्रेकआउट पर एंट्री लें।" },
-                    { id: 6, title: "Level 6: Price Action एंट्री सिग्नल्स", content: "Price Action में बिना इंडिकेटर के साफ एंट्री सिग्नल्स होते हैं:<br><br>🔹 <b>Pin Bar:</b> लंबी Wick वाली कैंडल। किसी लेवल का रिजेक्शन।<br>🔹 <b>Inside Bar:</b> एक कैंडल जो पिछली कैंडल के अंदर हो। Consolidation का संकेत।<br>🔹 <b>Engulfing:</b> एक कैंडल जो पिछली कैंडल को पूरी तरह से कवर करे। मजबूत रिवर्सल सिग्नल।<br><br>✅ <b>Best Practice:</b> Pin Bar को Support/Resistance लेवल के साथ Combine करें।" },
-                    { id: 7, title: "Level 7: मल्टी-टाइमफ्रेम एनालिसिस (Multi-Timeframe Analysis)", content: "Professional Traders एंट्री लेने से पहले <b>3 Timeframes</b> को देखते हैं।<br><br>🔹 <b>Higher TF (4H/Daily):</b> मुख्य ट्रेंड पहचानें।<br>🔹 <b>Medium TF (1H):</b> एंट्री ज़ोन ढूँढ़ें।<br>🔹 <b>Lower TF (15m):</b> सही टाइमिंग के लिए इस्तेमाल करें।<br><br>🧠 <b>नियम:</b> HTF के ट्रेंड की दिशा में ट्रेड करें। टाइमिंग के लिए LTF का इस्तेमाल करें।" },
-                    { id: 8, title: "Level 8: Price Action में रिस्क मैनेजमेंट", content: "रिस्क मैनेजमेंट पैसे कमाने से भी ज्यादा ज़रूरी है।<br><br>🔹 <b>Stop Loss:</b> खरीदारी में पिछले Swing Low के नीचे, बिक्री में पिछले Swing High के ऊपर रखें।<br>🔹 <b>Take Profit:</b> अगले मुख्य Support/Resistance लेवल पर सेट करें।<br><br>💡 <b>Rule of thumb:</b> हमेशा कम से कम <b>1:2 Risk-Reward</b> ratio का लक्ष्य रखें।" },
-                    { id: 9, title: "Level 9: Price Action में पेशेंस (Patience)", content: "Price Action में 30% तकनीक और 70% मनोविज्ञान (Psychology) है।<br><br>🔹 <b>Discipline:</b> अपने लेवल्स पर कायम रहें। रैंडम ट्रेडिंग न करें।<br>🔹 <b>Patience:</b> प्राइस के आपके पास आने का इंतज़ार करें। पीछे न भागें।<br><br>🔥 <b>Pro Tip:</b> हमेशा एक स्पष्ट प्लान के साथ ट्रेड करें। बटन क्लिक करने से पहले Entry, SL, और TP लिखें।" },
-                    { id: 10, title: "Level 10: मार्केट साइकोलॉजी (Market Psychology)", content: "Price Action में बाजार को पढ़ना ही सब कुछ है।<br><br>🔹 <b>Fear and Greed:</b> डर और लालच आपके सबसे बड़े दुश्मन हैं।<br>🔹 <b>FOMO:</b> पीछे भागने की आदत को छोड़ें।<br><br>📌 <b>Rule:</b> जब बाजार में सबसे ज्यादा डर हो (संकट के समय), तो खरीदारी के लिए तैयार रहें। जब सबसे ज्यादा लालच हो (बुल मार्केट का अंत), तो बेचने के लिए तैयार रहें।" },
-                    { id: 11, title: "Level 11: Price Action में बायसेड (Biased) कैसे बनें?", content: "Price Action में <b>Biased</b> होने का मतलब है कि आपको Market का Direction पहले से पता हो।<br><br>🔹 <b>Step 1:</b> HTF पर S/R और ट्रेंड पहचानें (Bullish/Bearish)।<br>🔹 <b>Step 2:</b> कैंडलस्टिक पैटर्न (जैसे Engulfing, Pin Bar) को मार्क करें।<br>🔹 <b>Step 3:</b> प्राइस के S/R लेवल को Test करने का इंतज़ार करें।<br><br>💡 <b>Pro Tip:</b> अगर आपका बायस सही है, तो प्राइस आपके बताए लेवल पर आएगा और आपको सिग्नल देगा।" },
-                    { id: 12, title: "Level 12: Price Action में मल्टी-कन्फर्मेशन (Multi-Confirmation)", content: "Price Action में मल्टी-कन्फर्मेशन का मतलब है कि एक से ज्यादा चीज़ें एक ही दिशा में इशारा करें।<br><br>🔹 <b>Example:</b> अगर प्राइस Support लेवल पर है, <b>एक Pin Bar</b> बना है, और <b>Trendline</b> भी वहाँ रेस्पेक्ट कर रही है – तो यह एक High-Probability Entry है।<br><br>✅ <b>Rule:</b> जितनी ज्यादा कन्फर्मेशन, उतनी सुरक्षित एंट्री।" },
-                    { id: 13, title: "Level 13: Price Action में एग्ज़िक्यूशन (Execution)", content: "Price Action में एग्ज़िक्यूशन का मतलब है कि आपने अपनी एंट्री कितनी सटीकता से ली।<br><br>🔹 <b>Limit Order:</b> अपने S/R लेवल पर Limit Order लगाएं। Market Order से बचें।<br>🔹 <b>Stop Loss:</b> SL को हमेशा Swing Low/High से 5-10 pips बाहर रखें ताकि विक (Wick) आपको न उड़ाए।<br><br>📌 <b>Rule:</b> अगर एंट्री का ज़ोन टूट गया, तो ट्रेड कैंसल करें।" },
-                    { id: 14, title: "Level 14: Price Action में RR (Risk-Reward) को बढ़ावा देना", content: "Professional Traders हर ट्रेड पर <b>1:3 Risk-Reward</b> का लक्ष्य रखते हैं।<br><br>🔹 <b>कैसे करें:</b> अगर आपका SL 50 pips है, तो आपका TP 150 pips होना चाहिए।<br><br>⚡ <b>Strategy:</b> जब प्राइस आपके लेवल पर आए और कन्फर्मेशन मिले, तो TP को पिछले Swing High/Low से ठीक पहले रखें।" },
-                    { id: 15, title: "Level 15: प्रोफेशनल Price Action फ्रेमवर्क (The Ultimate Framework)", content: "यह Price Action का पूरा प्रोफेशनल फ्रेमवर्क है। इसे रोज़ाना इस्तेमाल करें:<br><br>1️⃣ <b>HTF पर ट्रेंड पहचानें</b> (Bullish/Bearish)।<br>2️⃣ <b>Key S/R लेवल्स</b> को मार्क करें (Daily/4H)।<br>3️⃣ <b>LTF (15m/1H) पर जाएं</b> और Pin Bar या Engulfing का इंतज़ार करें।<br>4️⃣ <b>कन्फर्मेशन मिलने पर Limit Order</b> लगाएं।<br>5️⃣ <b>SL</b> को Swing High/Low के बाहर रखें।<br>6️⃣ <b>TP</b> को अगले Major S/R लेवल पर 1:3 RR के साथ सेट करें।<br><br>🎓 <b>बधाई हो!</b> आप अब एक Professional Price Action Trader हैं। चार्ट देखते ही आपको पता चल जाएगा कि कहाँ एंट्री लेनी है और कहाँ बाहर निकलना है।" }
-                ],
-                questions: {
-                    1: [{ q: "Price Action का मूल आधार क्या है?", a: "इंडिकेटर का इस्तेमाल", b: "बिना इंडिकेटर के प्राइस पढ़ना", c: "न्यूज़ को फॉलो करना", d: "Moving Averages का इस्तेमाल", ans: "B" }],
-                    2: [{ q: "Resistance क्या है?", a: "प्राइस ऊपर बाउंस करने वाला लेवल", b: "प्राइस नीचे रिवर्स करने वाला लेवल", c: "ब्रेकआउट लेवल", d: "वॉल्यूम लेवल", ans: "B" }],
-                    3: [{ q: "कौन सा Bullish Candlestick Pattern है?", a: "Shooting Star", b: "Hammer", c: "Bearish Engulfing", d: "Evening Star", ans: "B" }],
-                    4: [{ q: "Uptrend में Trendline क्या जोड़ती है?", a: "Lower Highs", b: "Higher Lows", c: "Equal Highs", d: "Random points", ans: "B" }],
-                    5: [{ q: "कौन सा Reversal Pattern है?", a: "Flag", b: "Triangle", c: "Head and Shoulders", d: "Pennant", ans: "C" }],
-                    6: [{ q: "Inside Bar क्या है?", a: "लंबी Wick वाली कैंडल", b: "पिछली कैंडल के अंदर वाली कैंडल", c: "बड़ी कैंडल", d: "Doji", ans: "B" }],
-                    7: [{ q: "एक Pro Trader कितने Timeframes का विश्लेषण करता है?", a: "1", b: "2", c: "3", d: "5", ans: "C" }],
-                    8: [{ q: "खरीदारी (Buy) में Stop Loss कहाँ रखना चाहिए?", a: "टॉप पर", b: "पिछले Swing Low के नीचे", c: "पिछले Swing High के ऊपर", d: "Take Profit पर", ans: "B" }],
-                    9: [{ q: "Price Action Trader का सबसे बड़ा दुश्मन क्या है?", a: "इंडिकेटर", b: "डर और लालच (Fear & Greed)", c: "वॉल्यूम", d: "न्यूज़", ans: "B" }],
-                    10: [{ q: "FOMO से बचने के लिए क्या करना चाहिए?", a: "फास्ट एंट्री लेनी चाहिए", b: "इंतज़ार करना चाहिए", c: "न्यूज़ देखनी चाहिए", d: "इंडिकेटर लगाने चाहिए", ans: "B" }],
-                    11: [{ q: "Price Action में Biased बनने का पहला कदम क्या है?", a: "LTF पर एंट्री लेना", b: "HTF पर S/R और ट्रेंड पहचानना", c: "इंडिकेटर लगाना", d: "न्यूज़ चेक करना", ans: "B" }],
-                    12: [{ q: "Multi-Confirmation Entry क्या है?", a: "सिर्फ एक कैंडल देखना", b: "एक से ज्यादा चीज़ें एक ही दिशा में इशारा करें", c: "सिर्फ Trendline देखना", d: "सिर्फ S/R देखना", ans: "B" }],
-                    13: [{ q: "Price Action में Limit Order का इस्तेमाल क्यों करना चाहिए?", a: "बेहतर स्लिपेज के लिए", b: "सटीकता के लिए", c: "नुकसान बचाने के लिए", d: "सबकुछ", ans: "D" }],
-                    14: [{ q: "Price Action में Risk-Reward Ratio कितना होना चाहिए?", a: "1:1", b: "1:3 या 2:1", c: "1:2 या 1:3", d: "3:1", ans: "C" }],
-                    15: [{ q: "Price Action Professional Framework में पहला कदम क्या है?", a: "TP सेट करना", b: "HTF पर ट्रेंड पहचानना", c: "एंट्री लेना", d: "SL सेट करना", ans: "B" }]
-                }
-            }
-        };
+    <!-- Owner Payments -->
+    <div class="card">
+        <h3>👨‍💼 Malik se Payment (Owner Payment)</h3>
+        <label>Date</label><input type="date" id="ownerDate">
+        <label>Amount (₹)</label><input type="number" id="ownerAmount" min="1" placeholder="Jaise: 500 ya 1000">
+        <label>Note (Optional)</label><input type="text" id="ownerNote" placeholder="Jaise: Daily payment, Advance">
+        <button onclick="saveOwnerPayment()" style="background:#1565c0;">💾 Save Owner Payment</button>
 
-        // ================= STATE MANAGEMENT (LocalStorage) =================
-        let currentCourse = null;
-        let currentLevel = null;
-        let state = {
-            smc: { completed: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] },
-            pa: { completed: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] }
-        };
-        let streak = 0;
-        let lastVisit = null;
+        <div class="owner-total" style="margin-top: 15px;">
+            <div>Total Received from Owner</div>
+            <strong id="ownerTotalAmount">₹0</strong>
+        </div>
 
-        function loadState() {
-            const saved = localStorage.getItem('tradeProProgress');
-            if(saved) {
-                const parsed = JSON.parse(saved);
-                state = parsed.state || state;
-                streak = parsed.streak || 0;
-                lastVisit = parsed.lastVisit || null;
-            }
-            updateStreak();
-        }
+        <div id="ownerRecords" style="margin-top: 15px;"><p class="muted">Loading...</p></div>
+        <div id="ownerLoader">⏳ Loading...</div>
+    </div>
 
-        function saveState() {
-            localStorage.setItem('tradeProProgress', JSON.stringify({ state, streak, lastVisit: new Date().toDateString() }));
-        }
+    <p class="muted" style="text-align:center; margin-bottom: 20px;">Data securely stored on Firebase Cloud</p>
+</div>
 
-        function updateStreak() {
-            const today = new Date().toDateString();
-            if(lastVisit === today) {
-                // Already visited today
-            } else if(lastVisit === null) {
-                streak = 1;
-            } else {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                if(lastVisit === yesterday.toDateString()) {
-                    streak++;
-                } else {
-                    streak = 1;
-                }
-            }
-            lastVisit = today;
-            document.getElementById('streakCount').innerText = streak;
-            document.getElementById('streakCountDash').innerText = streak;
-            saveState();
-        }
-
-        // ================= UI FUNCTIONS =================
-        function selectCourse(course) {
-            currentCourse = course;
-            document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('contentView').style.display = 'none';
-            renderDashboard();
-        }
-
-        function goHome() {
-            document.getElementById('landingPage').style.display = 'flex';
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('contentView').style.display = 'none';
-            currentCourse = null;
-        }
-
-        function goBackToDashboard() {
-            document.getElementById('contentView').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            renderDashboard();
-        }
-
-        function renderDashboard() {
-            const data = courseData[currentCourse];
-            document.getElementById('courseTitleDisplay').innerText = data.name;
-            document.getElementById('courseIcon').innerText = data.icon;
-            document.getElementById('courseNameDisplay').innerText = data.name;
-
-            const completedCount = state[currentCourse].completed.filter(Boolean).length;
-            document.getElementById('courseSubDisplay').innerText = `Level ${completedCount} / 15 पूरे हुए`;
-            document.getElementById('progressText').innerText = `${completedCount} / 15 Lessons`;
-            document.getElementById('progressFill').style.width = (completedCount / 15) * 100 + '%';
-
-            let html = '';
-            data.levels.forEach((level, index) => {
-                const isCompleted = state[currentCourse].completed[index];
-                const isUnlocked = index === 0 || state[currentCourse].completed[index - 1];
-                let status = isCompleted ? '✅' : (isUnlocked ? '📖' : '🔒');
-                let cls = isCompleted ? 'completed' : (isUnlocked ? '' : 'locked');
-
-                html += `
-                    <div class="lesson-card ${cls}" onclick="${isUnlocked ? `openLevel(${index})` : 'showToast(\'पहले पिछला Level पूरा करें!\')'}">
-                        <div class="info">
-                            <h4><span class="level-badge">Level ${level.id}</span> ${level.title}</h4>
-                            <p>${isCompleted ? 'पूरा हो चुका है' : (isUnlocked ? 'सीखने के लिए तैयार' : 'लॉक है')}</p>
-                        </div>
-                        <div class="status">${status}</div>
-                    </div>
-                `;
-            });
-            document.getElementById('lessonList').innerHTML = html;
-        }
-
-        // ================= LEVEL & TEST LOGIC =================
-        function openLevel(index) {
-            currentLevel = index;
-            const data = courseData[currentCourse];
-            const level = data.levels[index];
-
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('contentView').style.display = 'block';
-
-            document.getElementById('lessonTitle').innerHTML = `${level.title}`;
-            document.getElementById('lessonBody').innerHTML = level.content;
-            document.getElementById('startTestBtn').style.display = 'block';
-            document.getElementById('startTestBtn').disabled = false;
-            document.getElementById('quizArea').style.display = 'none';
-        }
-
-        function startTest() {
-            const data = courseData[currentCourse];
-            const questions = data.questions[currentLevel + 1];
-
-            if(!questions || questions.length === 0) {
-                showToast("इस Level के लिए कोई Test उपलब्ध नहीं है।");
-                return;
-            }
-
-            document.getElementById('startTestBtn').style.display = 'none';
-            document.getElementById('quizArea').style.display = 'block';
-            
-            window.currentQIndex = 0;
-            window.score = 0;
-            window.questionsList = questions;
-            renderQuestion();
-        }
-
-        function renderQuestion() {
-            const q = window.questionsList[window.currentQIndex];
-            document.getElementById('questionText').innerText = `प्रश्न ${window.currentQIndex + 1} of ${window.questionsList.length}: ${q.q}`;
-            
-            let optionsHtml = `
-                <div class="quiz-opt" onclick="checkAnswer('A', this)">A. ${q.a}</div>
-                <div class="quiz-opt" onclick="checkAnswer('B', this)">B. ${q.b}</div>
-                <div class="quiz-opt" onclick="checkAnswer('C', this)">C. ${q.c}</div>
-                <div class="quiz-opt" onclick="checkAnswer('D', this)">D. ${q.d}</div>
-            `;
-            document.getElementById('optionsContainer').innerHTML = optionsHtml;
-            document.getElementById('nextQBtn').style.display = 'none';
-        }
-
-        function checkAnswer(selected, element) {
-            const q = window.questionsList[window.currentQIndex];
-            document.querySelectorAll('.quiz-opt').forEach(el => el.classList.add('disabled'));
-            
-            if(selected === q.ans) {
-                element.classList.add('correct');
-                window.score++;
-            } else {
-                element.classList.add('wrong');
-                document.querySelectorAll('.quiz-opt').forEach(el => {
-                    if(el.innerText.startsWith(q.ans + '.')) el.classList.add('correct');
-                });
-            }
-            document.getElementById('nextQBtn').style.display = 'block';
-        }
-
-        function nextQuestion() {
-            window.currentQIndex++;
-            if(window.currentQIndex < window.questionsList.length) {
-                renderQuestion();
-            } else {
-                finishTest();
-            }
-        }
-
-        function finishTest() {
-            const total = window.questionsList.length;
-            const percentage = (window.score / total) * 100;
-            
-            if(percentage >= 60) {
-                showToast(`🎉 पास! आपने ${window.score}/${total} स्कोर किया। अगला Level खुल रहा है!`);
-                state[currentCourse].completed[currentLevel] = true;
-                saveState();
-                // AUTO-REDIRECT TO DASHBOARD AND RENDER NEW LEVEL
-                setTimeout(() => {
-                    goBackToDashboard();
-                }, 1500);
-            } else {
-                showToast(`❌ फेल! आपने ${window.score}/${total} स्कोर किया। कृपया Lesson को दोबारा पढ़ें और Test फिर से दें।`);
-                document.getElementById('quizArea').style.display = 'none';
-                document.getElementById('startTestBtn').style.display = 'block';
-                document.getElementById('startTestBtn').innerText = "🔄 Retake Test";
-            }
-        }
-
-        // ================= UTILS =================
-        function resetAllProgress() {
-            if(confirm("क्या आप सच में सारी प्रोग्रेस रीसेट करना चाहते हैं? यह वापस नहीं आएगा।")) {
-                state = { smc: { completed: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] }, pa: { completed: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false] } };
-                streak = 0;
-                saveState();
-                if(currentCourse) renderDashboard();
-                showToast("🔄 प्रोग्रेस रीसेट हो गई!");
-            }
-        }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.display = 'block';
-            clearTimeout(t._timeout);
-            t._timeout = setTimeout(() => t.style.display = 'none', 4000);
-        }
-
-        // ================= INIT =================
-        loadState();
-        console.log("Zero to Pro Trading Academy (Hindi) Loaded.");
-    </script>
 </body>
 </html>
