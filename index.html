@@ -92,6 +92,25 @@
         const repairsCollection = collection(db, "repairs");
         const ownerPaymentsCollection = collection(db, "ownerPayments");
 
+        // ================= AUTO DATE CHANGE LOGIC =================
+        function updateDates() {
+            const todayStr = new Date().toISOString().slice(0, 10);
+            
+            // अगर पेज खुला है और तारीख पुरानी है, तो उसे अपडेट करें
+            const dateInput = document.getElementById("date");
+            const ownerDateInput = document.getElementById("ownerDate");
+            
+            if (dateInput && dateInput.value < todayStr) {
+                dateInput.value = todayStr;
+            }
+            if (ownerDateInput && ownerDateInput.value < todayStr) {
+                ownerDateInput.value = todayStr;
+            }
+        }
+
+        // हर 1 मिनट में चेक करें कि तारीख बदली या नहीं
+        setInterval(updateDates, 60000);
+
         // ================= AUTHENTICATION =================
         window.login = async function() {
             const email = document.getElementById("loginEmail").value.trim();
@@ -126,8 +145,8 @@
         });
 
         // ================= DATA LOGIC =================
-        let allEntries = []; // सारा डेटा यहाँ सेव रहेगा
-        let filteredEntries = []; // जो स्क्रीन पर दिखेगा
+        let allEntries = [];
+        let filteredEntries = [];
         let ownerEntries = [];
         let currentEditId = null;
 
@@ -150,8 +169,6 @@
                 const q = query(repairsCollection, orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
                 allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                
-                // पहली बार लोड होने पर फिल्टर लगाएं (जो डिफ़ॉल्ट रूप से सब कुछ दिखाएगा)
                 applyFilters();
             } catch (e) {
                 console.error(e);
@@ -201,7 +218,7 @@
                     alert("✅ Entry Saved!");
                 }
                 resetForm();
-                loadData(); // फिर से डेटा लोड करें
+                loadData();
             } catch (e) {
                 alert("Error saving: " + e.message);
             }
@@ -295,7 +312,6 @@
                 </div>
             `).join("");
             
-            // टोटल सिर्फ फिल्टर हुए डेटा का
             const sum = filteredEntries.reduce((s, x) => s + Number(x.amount || 0), 0);
             document.getElementById("count").textContent = filteredEntries.length;
             document.getElementById("total").textContent = "₹" + sum.toLocaleString("en-IN");
@@ -337,10 +353,7 @@
             const filterDate = document.getElementById("filterDate").value;
 
             filteredEntries = allEntries.filter(x => {
-                // तारीख से फिल्टर (अगर तारीख चुनी गई है)
                 if (filterDate && x.date !== filterDate) return false;
-                
-                // सर्च से फिल्टर (अगर कुछ सर्च किया गया है)
                 if (searchTerm) {
                     const match = [x.customer, x.phone, x.model, x.problem].join(" ").toLowerCase().includes(searchTerm);
                     if (!match) return false;
@@ -350,7 +363,6 @@
 
             render();
             
-            // History खोल दें ताकि यूजर रिजल्ट देख सके
             document.getElementById("historyContainer").style.display = "block";
             document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
@@ -358,7 +370,7 @@
         window.clearFilters = function() {
             document.getElementById("searchInput").value = "";
             document.getElementById("filterDate").value = "";
-            applyFilters(); // सब कुछ दिखाएं
+            applyFilters();
         };
 
         // Init Dates
