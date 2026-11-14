@@ -395,7 +395,7 @@
             return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         };
 
-        // ================= SEARCH & FILTER LOGIC (FIXED) =================
+        // ================= SMART SEARCH LOGIC (FIXED) =================
         window.applyFilters = function() {
             const searchBtn = document.querySelector('button[onclick="applyFilters()"]');
             const originalText = searchBtn.innerHTML;
@@ -405,10 +405,15 @@
 
             setTimeout(() => {
                 const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
-                const filterDate = document.getElementById("filterDate").value;
+                let filterDate = document.getElementById("filterDate").value;
                 const statusDiv = document.getElementById("searchStatus");
 
-                // अगर सर्च बार खाली है और तारीख भी नहीं डाली, तो आज का डेटा दिखाएं
+                // 🟢 SMART LOGIC: अगर यूजर ने कुछ सर्च किया है, तो तारीख को इग्नोर करो (जब तक यूजर ने खुद तारीख न बदली हो)
+                // सबसे आसान तरीका: अगर सर्च बार खाली नहीं है, तो तारीख से फिल्टर मत करो
+                if (searchTerm) {
+                    filterDate = ""; 
+                }
+
                 if (!searchTerm && !filterDate) {
                     filterTodayData();
                     searchBtn.innerHTML = originalText;
@@ -417,13 +422,11 @@
                 }
 
                 filteredEntries = allEntries.filter(x => {
-                    // तारीख से फिल्टर (सिर्फ तभी जब यूजर ने तारीख डाली हो)
                     let dateMatch = true;
                     if (filterDate) {
                         dateMatch = (x.date === filterDate);
                     }
                     
-                    // सर्च से फिल्टर (अगर कुछ टाइप किया गया है)
                     let searchMatch = true;
                     if (searchTerm) {
                         searchMatch = [x.customer, x.phone, x.model, x.problem].join(" ").toLowerCase().includes(searchTerm);
@@ -432,20 +435,15 @@
                     return dateMatch && searchMatch;
                 });
 
-                // स्टेटस बार अपडेट करें
                 statusDiv.style.display = "block";
-                if (searchTerm && filterDate) {
-                    statusDiv.innerText = `Showing results for "${searchTerm}" on ${filterDate}`;
-                } else if (searchTerm) {
+                if (searchTerm) {
                     statusDiv.innerText = `Showing ALL results for "${searchTerm}" (All Dates)`;
                 } else if (filterDate) {
                     statusDiv.innerText = `Showing ALL records for ${filterDate}`;
                 }
 
-                // रेंडर करें
                 render();
                 
-                // हिस्ट्री खोल दें
                 document.getElementById("historyContainer").style.display = "block";
                 document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
 
@@ -457,7 +455,7 @@
         window.clearFilters = function() {
             document.getElementById("searchInput").value = "";
             document.getElementById("filterDate").value = "";
-            filterTodayData(); // वापस आज के डेटा पर आएं
+            filterTodayData();
         };
 
         window.onload = function() {
