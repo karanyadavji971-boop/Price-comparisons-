@@ -69,6 +69,9 @@
         .owner-entry p { margin: 0; font-size: 14px; }
         .owner-entry .amount { font-weight: 800; color: #1565c0; font-size: 16px; }
         #loader, #ownerLoader { display: none; text-align: center; padding: 15px; font-weight: 600; color: #087f5b; }
+
+        /* Search Status Bar */
+        .search-status { background: #fef3c7; color: #92400e; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none; text-align: center; border: 1px solid #fcd34d; }
     </style>
     
     <script type="module">
@@ -157,7 +160,6 @@
         let ownerEntries = [];
         let currentEditId = null;
 
-        // Toggles for Histories
         window.toggleHistory = function() {
             const container = document.getElementById("historyContainer");
             const btn = document.getElementById("toggleHistoryBtn");
@@ -198,7 +200,6 @@
         }
 
         function updateCustomerDatalist() {
-            // सबसे पहले 'Customer' जोड़ें
             const names = new Set(["Customer", "Arushi telecom", "Abdul", "Mamta", "Naaz", "Sheetal"]);
             allEntries.forEach(entry => {
                 if (entry.customer) names.add(entry.customer);
@@ -208,8 +209,12 @@
             datalist.innerHTML = Array.from(names).map(name => `<option value="${name}">`).join('');
         }
 
-        function filterTodayData() {
+        // आज के डेटा पर वापस जाने का फंक्शन
+        window.filterTodayData = function() {
+            document.getElementById("searchInput").value = "";
             document.getElementById("filterDate").value = currentDateStr;
+            document.getElementById("searchStatus").style.display = "none";
+            
             filteredEntries = allEntries.filter(x => x.date === currentDateStr);
             render();
             
@@ -334,7 +339,7 @@
         window.render = function() {
             const box = document.getElementById("records");
             if (!filteredEntries.length) { 
-                box.innerHTML = "<p class='muted'>Is date ka koi record nahi mila.</p>"; 
+                box.innerHTML = "<p class='muted'>Koi record nahi mila.</p>"; 
                 document.getElementById("count").textContent = "0";
                 document.getElementById("total").textContent = "₹0";
                 return; 
@@ -391,30 +396,66 @@
             return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         };
 
-        // ================= SEARCH & FILTER LOGIC =================
+        // ================= SEARCH & FILTER LOGIC (PRO FEEDBACK) =================
         window.applyFilters = function() {
-            const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
-            const filterDate = document.getElementById("filterDate").value;
-
-            filteredEntries = allEntries.filter(x => {
-                if (filterDate && x.date !== filterDate) return false;
-                if (searchTerm) {
-                    const match = [x.customer, x.phone, x.model, x.problem].join(" ").toLowerCase().includes(searchTerm);
-                    if (!match) return false;
-                }
-                return true;
-            });
-
-            render();
+            const searchBtn = document.querySelector('button[onclick="applyFilters()"]');
+            const originalText = searchBtn.innerHTML;
             
-            document.getElementById("historyContainer").style.display = "block";
-            document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
+            // 1. लोडिंग इफेक्ट
+            searchBtn.innerHTML = "⏳ Searching...";
+            searchBtn.disabled = true;
+
+            setTimeout(() => {
+                const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
+                const filterDate = document.getElementById("filterDate").value;
+                const statusDiv = document.getElementById("searchStatus");
+
+                // अगर कुछ भी सर्च नहीं किया गया है
+                if (!searchTerm && !filterDate) {
+                    filterTodayData();
+                    searchBtn.innerHTML = originalText;
+                    searchBtn.disabled = false;
+                    return;
+                }
+
+                filteredEntries = allEntries.filter(x => {
+                    let dateMatch = true;
+                    if (filterDate) dateMatch = (x.date === filterDate);
+                    
+                    let searchMatch = true;
+                    if (searchTerm) {
+                        searchMatch = [x.customer, x.phone, x.model, x.problem].join(" ").toLowerCase().includes(searchTerm);
+                    }
+                    return dateMatch && searchMatch;
+                });
+
+                // 2. स्टेटस बार अपडेट करें
+                statusDiv.style.display = "block";
+                if (searchTerm && filterDate) {
+                    statusDiv.innerText = `Showing results for "${searchTerm}" on ${filterDate}`;
+                } else if (searchTerm) {
+                    statusDiv.innerText = `Showing ALL results for "${searchTerm}"`;
+                } else if (filterDate) {
+                    statusDiv.innerText = `Showing ALL records for ${filterDate}`;
+                }
+
+                // 3. रेंडर करें
+                render();
+                
+                // हिस्ट्री खोल दें
+                document.getElementById("historyContainer").style.display = "block";
+                document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
+
+                // बटन वापस नॉर्मल करें
+                searchBtn.innerHTML = originalText;
+                searchBtn.disabled = false;
+            }, 600); // 0.6 सेकंड का लोडिंग इफेक्ट
         };
 
         window.clearFilters = function() {
             document.getElementById("searchInput").value = "";
             document.getElementById("filterDate").value = "";
-            applyFilters();
+            filterTodayData(); // वापस आज के डेटा पर आएं
         };
 
         window.onload = function() {
@@ -453,7 +494,6 @@
         <label>Customer Name</label>
         <input id="customer" placeholder="Customer ka naam" list="customerList">
         <datalist id="customerList">
-            <!-- यहाँ अपने पुराने नाम दिखेंगे -->
             <option value="Customer">
             <option value="Arushi telecom">
             <option value="Abdul">
@@ -497,17 +537,20 @@
     <div class="card">
         <h3>🔍 Search / Filter</h3>
         <input type="text" id="searchInput" class="search-input" placeholder="Search by Model, Problem, or Customer...">
-        <label>Filter by Date</label>
+        <label>Filter by Date (Optional)</label>
         <div class="filter-row">
             <input type="date" id="filterDate">
-            <button class="small" onclick="applyFilters()">Filter</button>
+            <button class="small" onclick="applyFilters()" style="min-width: 80px;">Filter</button>
             <button class="small secondary" onclick="clearFilters()">Clear</button>
         </div>
+        
+        <!-- Search Status Bar (दिखाएगा कि सर्च हुआ या नहीं) -->
+        <div id="searchStatus" class="search-status"></div>
     </div>
 
     <!-- Records Summary -->
     <div class="card">
-        <h3>📊 Daily Income</h3>
+        <h3 id="summaryTitle">📊 Daily Income</h3>
         <div class="grid">
             <div class="total"><div>Records Shown</div><strong id="count">0</strong></div>
             <div class="total"><div>Total Amount</div><strong id="total">₹0</strong></div>
