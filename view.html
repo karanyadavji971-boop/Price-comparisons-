@@ -41,11 +41,7 @@
         .muted { color: #64748b; font-size: 13px; }
         .status-paid { color: #22c55e; font-weight: 700; }
         .status-pending { color: #ef4444; font-weight: 700; }
-        
-        .owner-entry { border: 1px solid #e2e8f0; border-left: 4px solid #1565c0; border-radius: 10px; padding: 12px; margin-top: 10px; background: #fff; display: flex; justify-content: space-between; align-items: center; }
-        .owner-entry p { margin: 0; font-size: 14px; }
-        .owner-entry .amount { font-weight: 800; color: #1565c0; font-size: 16px; }
-        #loader, #ownerLoader { display: none; text-align: center; padding: 15px; font-weight: 600; color: #087f5b; }
+        #loader { display: none; text-align: center; padding: 15px; font-weight: 600; color: #087f5b; }
 
         /* Search Status Bar */
         .search-status { background: #fef3c7; color: #92400e; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none; text-align: center; border: 1px solid #fcd34d; }
@@ -71,10 +67,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const repairsCollection = collection(db, "repairs");
-        const ownerPaymentsCollection = collection(db, "ownerPayments");
 
         let allEntries = [];
-        let ownerEntries = [];
 
         // ================= LOAD DATA =================
         async function loadData() {
@@ -87,21 +81,6 @@
             } catch (e) {
                 console.error(e);
                 document.getElementById("records").innerHTML = "<p class='muted'>Data load error: " + e.message + "</p>";
-            }
-        }
-
-        async function loadOwnerData() {
-            document.getElementById("ownerLoader").style.display = "block";
-            try {
-                const q = query(ownerPaymentsCollection, orderBy("date", "desc"));
-                const snapshot = await getDocs(q);
-                ownerEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderOwnerData();
-            } catch (e) {
-                console.error("Error loading owner data:", e);
-                document.getElementById("ownerRecords").innerHTML = "<p class='muted'>Data load error.</p>";
-            } finally {
-                document.getElementById("ownerLoader").style.display = "none";
             }
         }
 
@@ -131,31 +110,6 @@
             const sum = allEntries.reduce((s, x) => s + Number(x.amount || 0), 0);
             document.getElementById("count").textContent = allEntries.length;
             document.getElementById("total").textContent = "₹" + sum.toLocaleString("en-IN");
-        };
-
-        window.renderOwnerData = function() {
-            const box = document.getElementById("ownerRecords");
-            const totalEl = document.getElementById("ownerTotalAmount");
-            if (!ownerEntries.length) {
-                box.innerHTML = "<p class='muted'>Abhi tak koi payment nahi.</p>";
-                totalEl.textContent = "₹0"; return;
-            }
-            let total = 0;
-            box.innerHTML = ownerEntries.map(x => {
-                total += Number(x.amount);
-                return `
-                    <div class="owner-entry">
-                        <div>
-                            <p><b>${escapeHTML(x.date)}</b></p>
-                            <p style="font-size:12px; color:#666;">${escapeHTML(x.note || "No note")}</p>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span class="amount">₹${Number(x.amount).toLocaleString("en-IN")}</span>
-                        </div>
-                    </div>
-                `;
-            }).join("");
-            totalEl.textContent = "₹" + total.toLocaleString("en-IN");
         };
 
         window.escapeHTML = function(s) {
@@ -222,7 +176,6 @@
         // Init
         window.onload = function() {
             loadData();
-            loadOwnerData();
         };
     </script>
 </head>
@@ -236,19 +189,6 @@
 
     <div class="view-badge">
         👁️ आप सिर्फ डेटा देख सकते हैं, इसमें कुछ बदल नहीं सकते।
-    </div>
-
-    <!-- Owner Payments (Read-Only) -->
-    <div class="card">
-        <h3>👨‍💼 Malik se Payment (Owner Payment)</h3>
-        
-        <div class="owner-total" style="margin-top: 15px;">
-            <div>Total Received from Owner</div>
-            <strong id="ownerTotalAmount">₹0</strong>
-        </div>
-
-        <div id="ownerRecords" style="margin-top: 15px;"><p class="muted">Loading...</p></div>
-        <div id="ownerLoader">⏳ Loading...</div>
     </div>
 
     <!-- Search & Filter -->
