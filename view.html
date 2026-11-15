@@ -79,7 +79,6 @@
                              String(now.getMonth() + 1).padStart(2, '0') + "-" + 
                              String(now.getDate()).padStart(2, '0');
             
-            // डिफ़ॉल्ट रूप से आज की तारीख फिल्टर में डालें
             document.getElementById("filterDate").value = currentDateStr;
         }
 
@@ -91,7 +90,6 @@
                 const snapshot = await getDocs(q);
                 allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 
-                // लोड होते ही आज का डेटा फिल्टर करें
                 filterTodayData();
             } catch (e) {
                 console.error(e);
@@ -117,7 +115,7 @@
             const box = document.getElementById("records");
             
             if (!dataArray.length) { 
-                box.innerHTML = "<p class='muted'>Is date ka koi record nahi mila.</p>"; 
+                box.innerHTML = "<p class='muted'>Koi record nahi mila.</p>"; 
                 document.getElementById("count").textContent = "0";
                 document.getElementById("total").textContent = "₹0";
                 return; 
@@ -149,15 +147,19 @@
             const filtered = allEntries.filter(x => x.date === currentDateStr);
             renderEntries(filtered);
             
-            // Hide history by default
             document.getElementById("historyContainer").style.display = "none";
             document.getElementById("toggleHistoryBtn").textContent = "🔽 Show Repair History";
         }
 
         window.applyFilters = function() {
             const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
-            const filterDate = document.getElementById("filterDate").value;
+            let filterDate = document.getElementById("filterDate").value;
             const statusDiv = document.getElementById("searchStatus");
+
+            // 🟢 स्मार्ट सर्च: अगर कुछ सर्च किया गया है, तो तारीख को इग्नोर करो और पूरे डेटा में सर्च करो
+            if (searchTerm) {
+                filterDate = ""; // तारीख को खाली कर दो ताकि सारी तारीखों में सर्च हो
+            }
 
             let filtered = allEntries.filter(x => {
                 let dateMatch = true;
@@ -173,21 +175,24 @@
 
             renderEntries(filtered);
 
-            if(searchTerm || filterDate) {
+            if(searchTerm) {
                 statusDiv.style.display = "block";
-                statusDiv.innerText = `Showing results for "${searchTerm || ''}" ${filterDate ? 'on '+filterDate : ''}`;
+                statusDiv.innerText = `Showing ALL results for "${searchTerm}" (All Dates)`;
+            } else if (filterDate) {
+                statusDiv.style.display = "block";
+                statusDiv.innerText = `Showing ALL records for ${filterDate}`;
             } else {
                 statusDiv.style.display = "none";
             }
 
-            // खोजने पर हिस्ट्री खोल दें
+            // रिजल्ट दिखाने के लिए हिस्ट्री खोल दें
             document.getElementById("historyContainer").style.display = "block";
             document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
 
         window.clearFilters = function() {
             document.getElementById("searchInput").value = "";
-            filterTodayData(); // वापस आज के डेटा पर
+            filterTodayData(); 
         };
 
         window.escapeHTML = function(s) {
