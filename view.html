@@ -27,14 +27,15 @@
         button { border: 0; padding: 12px; border-radius: 8px; background: #087f5b; color: white; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.2s; width: 100%; }
         button.secondary { background: #455a64; }
         button.small { padding: 7px 10px; font-size: 12px; margin: 3px; width: auto; }
+        button.toggle-btn { background: #fbbf24; color: #000; font-weight: 800; font-size: 14px; margin-bottom: 10px; }
 
         /* Totals & Entries */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .total { background: #e0f2eb; padding: 16px; border-radius: 10px; text-align: center; }
         .total strong { font-size: 25px; color: #087f5b; display: block; margin-top: 5px; }
         
-        /* History Container */
-        #historyContainer { margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+        /* History Container (Initially Hidden) */
+        #historyContainer { display: none; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
 
         .entry { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; background: #fff; }
         .entry p { margin: 6px 0; font-size: 14px; color: #334155; }
@@ -69,6 +70,18 @@
         const repairsCollection = collection(db, "repairs");
 
         let allEntries = [];
+        let currentDateStr = "";
+
+        // ================= DATE LOGIC =================
+        function checkAndUpdateDate() {
+            const now = new Date();
+            currentDateStr = now.getFullYear() + "-" + 
+                             String(now.getMonth() + 1).padStart(2, '0') + "-" + 
+                             String(now.getDate()).padStart(2, '0');
+            
+            // डिफ़ॉल्ट रूप से आज की तारीख फिल्टर में डालें
+            document.getElementById("filterDate").value = currentDateStr;
+        }
 
         // ================= LOAD DATA =================
         async function loadData() {
@@ -77,25 +90,40 @@
                 const q = query(repairsCollection, orderBy("createdAt", "desc"));
                 const snapshot = await getDocs(q);
                 allEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderEntries();
+                
+                // लोड होते ही आज का डेटा फिल्टर करें
+                filterTodayData();
             } catch (e) {
                 console.error(e);
                 document.getElementById("records").innerHTML = "<p class='muted'>Data load error: " + e.message + "</p>";
             }
         }
 
-        // ================= RENDER =================
-        window.renderEntries = function() {
+        // ================= SHOW/HIDE HISTORY =================
+        window.toggleHistory = function() {
+            const container = document.getElementById("historyContainer");
+            const btn = document.getElementById("toggleHistoryBtn");
+            if (container.style.display === "none" || container.style.display === "") {
+                container.style.display = "block";
+                btn.textContent = "🔼 Hide Repair History";
+            } else {
+                container.style.display = "none";
+                btn.textContent = "🔽 Show Repair History";
+            }
+        };
+
+        // ================= RENDER (READ-ONLY) =================
+        window.renderEntries = function(dataArray) {
             const box = document.getElementById("records");
-            if (!allEntries.length) { 
-                box.innerHTML = "<p class='muted'>Koi record nahi mila.</p>"; 
+            
+            if (!dataArray.length) { 
+                box.innerHTML = "<p class='muted'>Is date ka koi record nahi mila.</p>"; 
                 document.getElementById("count").textContent = "0";
                 document.getElementById("total").textContent = "₹0";
                 return; 
             }
             
-            // यहाँ कोई Edit और Delete बटन नहीं है, सिर्फ देखने के लिए
-            box.innerHTML = allEntries.map(x => `
+            box.innerHTML = dataArray.map(x => `
                 <div class="entry">
                     <p><b>${escapeHTML(x.date)}</b></p>
                     <p>👤 ${escapeHTML(x.customer)}</p>
@@ -107,16 +135,25 @@
                 </div>
             `).join("");
             
-            const sum = allEntries.reduce((s, x) => s + Number(x.amount || 0), 0);
-            document.getElementById("count").textContent = allEntries.length;
+            const sum = dataArray.reduce((s, x) => s + Number(x.amount || 0), 0);
+            document.getElementById("count").textContent = dataArray.length;
             document.getElementById("total").textContent = "₹" + sum.toLocaleString("en-IN");
         };
 
-        window.escapeHTML = function(s) {
-            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        };
+        // ================= FILTER LOGIC =================
+        window.filterTodayData = function() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("filterDate").value = currentDateStr;
+            document.getElementById("searchStatus").style.display = "none";
+            
+            const filtered = allEntries.filter(x => x.date === currentDateStr);
+            renderEntries(filtered);
+            
+            // Hide history by default
+            document.getElementById("historyContainer").style.display = "none";
+            document.getElementById("toggleHistoryBtn").textContent = "🔽 Show Repair History";
+        }
 
-        // ================= SEARCH (READ ONLY) =================
         window.applyFilters = function() {
             const searchTerm = document.getElementById("searchInput").value.trim().toLowerCase();
             const filterDate = document.getElementById("filterDate").value;
@@ -134,29 +171,7 @@
                 return dateMatch && searchMatch;
             });
 
-            // रेंडर फिल्टर किया हुआ
-            const box = document.getElementById("records");
-            if (!filtered.length) { 
-                box.innerHTML = "<p class='muted'>Koi record nahi mila.</p>"; 
-                document.getElementById("count").textContent = "0";
-                document.getElementById("total").textContent = "₹0";
-            } else {
-                box.innerHTML = filtered.map(x => `
-                    <div class="entry">
-                        <p><b>${escapeHTML(x.date)}</b></p>
-                        <p>👤 ${escapeHTML(x.customer)}</p>
-                        <p>📞 ${escapeHTML(x.phone || "-")}</p>
-                        <p>📱 ${escapeHTML(x.model)}</p>
-                        <p>🔧 ${escapeHTML(x.problem || "-")}</p>
-                        <p>💰 <b>₹${Number(x.amount).toLocaleString("en-IN")}</b></p>
-                        <p>💳 <span class="${x.payment === 'Paid' ? 'status-paid' : 'status-pending'}">${escapeHTML(x.payment)}</span></p>
-                    </div>
-                `).join("");
-                
-                const sum = filtered.reduce((s, x) => s + Number(x.amount || 0), 0);
-                document.getElementById("count").textContent = filtered.length;
-                document.getElementById("total").textContent = "₹" + sum.toLocaleString("en-IN");
-            }
+            renderEntries(filtered);
 
             if(searchTerm || filterDate) {
                 statusDiv.style.display = "block";
@@ -164,17 +179,24 @@
             } else {
                 statusDiv.style.display = "none";
             }
+
+            // खोजने पर हिस्ट्री खोल दें
+            document.getElementById("historyContainer").style.display = "block";
+            document.getElementById("toggleHistoryBtn").textContent = "🔼 Hide Repair History";
         };
 
         window.clearFilters = function() {
             document.getElementById("searchInput").value = "";
-            document.getElementById("filterDate").value = "";
-            document.getElementById("searchStatus").style.display = "none";
-            renderEntries();
+            filterTodayData(); // वापस आज के डेटा पर
+        };
+
+        window.escapeHTML = function(s) {
+            return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         };
 
         // Init
         window.onload = function() {
+            checkAndUpdateDate();
             loadData();
         };
     </script>
@@ -195,7 +217,7 @@
     <div class="card">
         <h3>🔍 Search / Filter</h3>
         <input type="text" id="searchInput" class="search-input" placeholder="Search by Model, Problem, or Customer...">
-        <label>Filter by Date (Optional)</label>
+        <label>Filter by Date</label>
         <div class="filter-row">
             <input type="date" id="filterDate">
             <button class="small" onclick="applyFilters()" style="min-width: 80px;">Filter</button>
@@ -213,11 +235,14 @@
         </div>
     </div>
 
-    <!-- Repair History (Read-Only) -->
+    <!-- Repair History (Hidden by Default) -->
     <div class="card">
-        <h3>📋 Repair History</h3>
-        <div id="records"><p class="muted">Loading from cloud...</p></div>
-        <div id="loader">⏳ Loading...</div>
+        <button class="toggle-btn" id="toggleHistoryBtn" onclick="toggleHistory()">🔽 Show Repair History</button>
+        
+        <div id="historyContainer">
+            <div id="records"><p class="muted">Loading from cloud...</p></div>
+            <div id="loader">⏳ Loading...</div>
+        </div>
     </div>
 
     <p class="muted" style="text-align:center; margin-bottom: 20px;">Powered by Firebase Cloud</p>
