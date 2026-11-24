@@ -62,7 +62,7 @@
         .owner-total { background: #e3f2fd; padding: 16px; border-radius: 10px; text-align: center; border: 1px solid #90caf9; }
         .owner-total strong { font-size: 25px; color: #1565c0; display: block; margin-top: 5px; }
         
-        /* History Containers (Initially Hidden) */
+        /* History Containers */
         #historyContainer, #ownerHistoryContainer { display: none; margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
 
         .entry { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; margin-top: 10px; background: #fff; }
@@ -120,6 +120,7 @@
 
                 if (auth.currentUser) {
                     filterTodayData();
+                    filterTodayOwnerData();
                 }
             }
         }
@@ -216,6 +217,7 @@
             datalist.innerHTML = Array.from(names).map(name => `<option value="${name}">`).join('');
         }
 
+        // Repair History Filter (Today)
         window.filterTodayData = function() {
             document.getElementById("searchInput").value = "";
             document.getElementById("filterDate").value = currentDateStr;
@@ -234,14 +236,27 @@
                 const q = query(ownerPaymentsCollection, orderBy("date", "desc"));
                 const snapshot = await getDocs(q);
                 ownerEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                filteredOwnerEntries = ownerEntries;
-                renderOwnerData();
+                
+                // By default, show today's data
+                filterTodayOwnerData();
             } catch (e) {
                 console.error("Error loading owner data:", e);
                 document.getElementById("ownerRecords").innerHTML = "<p class='muted'>Data load error.</p>";
             } finally {
                 document.getElementById("ownerLoader").style.display = "none";
             }
+        }
+
+        // Owner History Filter (Today) - NEW
+        window.filterTodayOwnerData = function() {
+            document.getElementById("ownerFilterDate").value = currentDateStr;
+            document.getElementById("ownerSearchText").value = "";
+            
+            filteredOwnerEntries = ownerEntries.filter(x => x.date === currentDateStr);
+            renderOwnerData();
+            
+            document.getElementById("ownerHistoryContainer").style.display = "none";
+            document.getElementById("toggleOwnerHistoryBtn").textContent = "🔽 Show Owner Payments";
         }
 
         // ================= SAVE & EDIT =================
@@ -291,6 +306,7 @@
                 document.getElementById("ownerNote").value = "";
                 loadOwnerData();
                 
+                // After saving, open history to show the new entry
                 document.getElementById("ownerHistoryContainer").style.display = "block";
                 document.getElementById("toggleOwnerHistoryBtn").textContent = "🔼 Hide Owner Payments";
             } catch (e) {
@@ -466,7 +482,7 @@
             filterTodayData();
         };
 
-        // ================= OWNER PAYMENT FILTER LOGIC =================
+        // ================= OWNER PAYMENT SEARCH & FILTER LOGIC =================
         window.applyOwnerFilters = function() {
             const search = document.getElementById("ownerSearchText").value.toLowerCase();
             const date = document.getElementById("ownerFilterDate").value;
@@ -488,8 +504,8 @@
         window.clearOwnerFilters = function() {
             document.getElementById("ownerSearchText").value = "";
             document.getElementById("ownerFilterDate").value = "";
-            filteredOwnerEntries = ownerEntries;
-            renderOwnerData();
+            // Reset to today's data
+            filterTodayOwnerData();
         };
 
         window.onload = function() {
@@ -559,7 +575,7 @@
             <strong id="ownerTotalAmount">₹0</strong>
         </div>
 
-        <!-- NEW: Owner Payment Search & Filter -->
+        <!-- Owner Payment Search & Filter -->
         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
             <h3 style="font-size:14px; margin-bottom:10px; color:#475569;">🔍 Filter Owner Payments</h3>
             <input type="text" id="ownerSearchText" placeholder="Search by note..." style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:8px;">
