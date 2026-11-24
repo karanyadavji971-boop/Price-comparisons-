@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mobile Repair Register (Private)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #f1f5f4; color: #222; padding: 14px; }
@@ -158,6 +164,7 @@
         let allEntries = [];
         let filteredEntries = [];
         let ownerEntries = [];
+        let filteredOwnerEntries = [];
         let currentEditId = null;
 
         window.toggleHistory = function() {
@@ -227,6 +234,7 @@
                 const q = query(ownerPaymentsCollection, orderBy("date", "desc"));
                 const snapshot = await getDocs(q);
                 ownerEntries = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                filteredOwnerEntries = ownerEntries;
                 renderOwnerData();
             } catch (e) {
                 console.error("Error loading owner data:", e);
@@ -368,34 +376,36 @@
         window.renderOwnerData = function() {
             const box = document.getElementById("ownerRecords");
             const totalEl = document.getElementById("ownerTotalAmount");
-            if (!ownerEntries.length) {
-                box.innerHTML = "<p class='muted'>Abhi tak koi payment nahi.</p>";
-                totalEl.textContent = "₹0"; return;
-            }
+            
+            // Total is calculated from ALL entries, not just filtered
             let total = 0;
-            box.innerHTML = ownerEntries.map(x => {
-                total += Number(x.amount);
-                return `
-                    <div class="owner-entry">
-                        <div>
-                            <p><b>${escapeHTML(x.date)}</b></p>
-                            <p style="font-size:12px; color:#666;">${escapeHTML(x.note || "No note")}</p>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span class="amount">₹${Number(x.amount).toLocaleString("en-IN")}</span>
-                            <button class="small danger" onclick="deleteOwnerPayment('${x.id}')" style="margin:0;">🗑️</button>
-                        </div>
-                    </div>
-                `;
-            }).join("");
+            ownerEntries.forEach(x => { total += Number(x.amount); });
             totalEl.textContent = "₹" + total.toLocaleString("en-IN");
+
+            if (!filteredOwnerEntries.length) {
+                box.innerHTML = "<p class='muted'>Koi payment nahi mili.</p>";
+                return;
+            }
+
+            box.innerHTML = filteredOwnerEntries.map(x => `
+                <div class="owner-entry">
+                    <div>
+                        <p><b>${escapeHTML(x.date)}</b></p>
+                        <p style="font-size:12px; color:#666;">${escapeHTML(x.note || "No note")}</p>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="amount">₹${Number(x.amount).toLocaleString("en-IN")}</span>
+                        <button class="small danger" onclick="deleteOwnerPayment('${x.id}')" style="margin:0;">🗑️</button>
+                    </div>
+                </div>
+            `).join("");
         };
 
         window.escapeHTML = function(s) {
             return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
         };
 
-        // ================= SMART SEARCH LOGIC (FIXED) =================
+        // ================= SEARCH & FILTER LOGIC =================
         window.applyFilters = function() {
             const searchBtn = document.querySelector('button[onclick="applyFilters()"]');
             const originalText = searchBtn.innerHTML;
@@ -408,8 +418,6 @@
                 let filterDate = document.getElementById("filterDate").value;
                 const statusDiv = document.getElementById("searchStatus");
 
-                // 🟢 SMART LOGIC: अगर यूजर ने कुछ सर्च किया है, तो तारीख को इग्नोर करो (जब तक यूजर ने खुद तारीख न बदली हो)
-                // सबसे आसान तरीका: अगर सर्च बार खाली नहीं है, तो तारीख से फिल्टर मत करो
                 if (searchTerm) {
                     filterDate = ""; 
                 }
@@ -456,6 +464,32 @@
             document.getElementById("searchInput").value = "";
             document.getElementById("filterDate").value = "";
             filterTodayData();
+        };
+
+        // ================= OWNER PAYMENT FILTER LOGIC =================
+        window.applyOwnerFilters = function() {
+            const search = document.getElementById("ownerSearchText").value.toLowerCase();
+            const date = document.getElementById("ownerFilterDate").value;
+
+            filteredOwnerEntries = ownerEntries.filter(entry => {
+                const matchText = entry.note ? entry.note.toLowerCase().includes(search) : false;
+                const matchDate = date ? entry.date === date : true;
+                
+                if(date && !search) return matchDate;
+                if(search && !date) return matchText;
+                return matchDate && matchText;
+            });
+
+            renderOwnerData();
+            document.getElementById("ownerHistoryContainer").style.display = "block";
+            document.getElementById("toggleOwnerHistoryBtn").textContent = "🔼 Hide Owner Payments";
+        };
+
+        window.clearOwnerFilters = function() {
+            document.getElementById("ownerSearchText").value = "";
+            document.getElementById("ownerFilterDate").value = "";
+            filteredOwnerEntries = ownerEntries;
+            renderOwnerData();
         };
 
         window.onload = function() {
@@ -523,6 +557,17 @@
         <div class="owner-total" style="margin-top: 15px;">
             <div>Total Received from Owner</div>
             <strong id="ownerTotalAmount">₹0</strong>
+        </div>
+
+        <!-- NEW: Owner Payment Search & Filter -->
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+            <h3 style="font-size:14px; margin-bottom:10px; color:#475569;">🔍 Filter Owner Payments</h3>
+            <input type="text" id="ownerSearchText" placeholder="Search by note..." style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #ccc; border-radius:8px;">
+            <div style="display:flex; gap:10px;">
+                <input type="date" id="ownerFilterDate" style="flex:1; padding:10px; border:1px solid #ccc; border-radius:8px;">
+                <button onclick="applyOwnerFilters()" style="background:#1565c0; color:white; border:none; padding:0 15px; border-radius:8px; font-weight:bold; cursor:pointer; width:auto;">Filter</button>
+                <button onclick="clearOwnerFilters()" style="background:#64748b; color:white; border:none; padding:0 15px; border-radius:8px; font-weight:bold; cursor:pointer; width:auto;">Clear</button>
+            </div>
         </div>
 
         <button class="toggle-btn" id="toggleOwnerHistoryBtn" onclick="toggleOwnerHistory()" style="background:#90caf9; color:#000; margin-top:15px;">🔽 Show Owner Payments</button>
